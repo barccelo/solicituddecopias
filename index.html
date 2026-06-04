@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Solicitud de copias</title>
+
+  <style>
+    :root {
+      --primary: #8b0000;
+      --primary-dark: #650000;
+      --bg: #f2f2f2;
+      --card: #ffffff;
+      --text: #222222;
+      --muted: #666666;
+      --border: #dddddd;
+      --success: #0f7b3f;
+      --error: #b00020;
+      --warning-bg: #fff7e8;
+      --warning-border: #f1d39a;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      min-height: 100%;
+      font-family: Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    body {
+      overflow-x: hidden;
+    }
+
+    .app {
+      width: 100%;
+      min-height: 100vh;
+      background: var(--bg);
+      padding-bottom: 20px;
+    }
+
+    .header {
+      background: var(--primary);
+      color: white;
+      padding: 24px 18px 22px;
+      text-align: center;
+      border-radius: 0 0 24px 24px;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 24px;
+      line-height: 1.2;
+    }
+
+    .header p {
+      margin: 8px 0 0;
+      font-size: 14px;
+      opacity: 0.95;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 16px 12px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-size: 19px;
+      font-weight: bold;
+      color: var(--primary);
+      margin-bottom: 16px;
+    }
+
+    .field {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      font-size: 15px;
+      font-weight: bold;
+      margin-bottom: 7px;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      min-height: 54px;
+      padding: 13px 14px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      font-size: 17px;
+      background: white;
+      color: var(--text);
+      font-family: Arial, sans-serif;
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+      line-height: 1.4;
+    }
+
+    input[readonly] {
+      background: #eeeeee;
+      color: #444444;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+
+    .button {
+      width: 100%;
+      min-height: 56px;
+      padding: 15px;
+      border: none;
+      border-radius: 14px;
+      background: var(--primary);
+      color: white;
+      font-weight: bold;
+      font-size: 17px;
+      cursor: pointer;
+    }
+
+    .button:active {
+      background: var(--primary-dark);
+      transform: scale(0.99);
+    }
+
+    .button.secondary {
+      background: #444444;
+      margin-top: 10px;
+    }
+
+    .button:disabled {
+      background: #999999;
+      cursor: not-allowed;
+    }
+
+    .message {
+      display: none;
+      margin-top: 14px;
+      padding: 13px;
+      border-radius: 12px;
+      font-size: 15px;
+      line-height: 1.4;
+    }
+
+    .message.success {
+      display: block;
+      background: #e7f5ec;
+      color: var(--success);
+      border: 1px solid #b7dfc6;
+    }
+
+    .message.error {
+      display: block;
+      background: #fdecef;
+      color: var(--error);
+      border: 1px solid #f4b6c1;
+    }
+
+    .message.info {
+      display: block;
+      background: #eef3ff;
+      color: #294a8d;
+      border: 1px solid #bdcbef;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .user-box {
+      background: #f8f8f8;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 14px;
+      margin-bottom: 18px;
+    }
+
+    .user-row {
+      padding: 9px 0;
+      border-bottom: 1px solid #e5e5e5;
+      font-size: 15px;
+    }
+
+    .user-row:last-child {
+      border-bottom: none;
+    }
+
+    .user-row strong {
+      display: block;
+      color: var(--muted);
+      margin-bottom: 3px;
+    }
+
+    .user-row span {
+      display: block;
+      font-weight: bold;
+      color: var(--text);
+    }
+
+    .total-box {
+      background: var(--warning-bg);
+      border: 1px solid var(--warning-border);
+      padding: 16px;
+      border-radius: 14px;
+      font-weight: bold;
+      margin-bottom: 18px;
+      font-size: 18px;
+      text-align: center;
+    }
+
+    .total-box span {
+      color: var(--primary);
+      font-size: 26px;
+    }
+
+    .sticky-actions {
+      position: sticky;
+      bottom: 0;
+      background: linear-gradient(to top, var(--bg) 85%, rgba(242,242,242,0));
+      padding-top: 16px;
+      padding-bottom: 8px;
+      margin-top: 8px;
+    }
+
+    .small-note {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.4;
+      margin-bottom: 16px;
+    }
+
+    @media (min-width: 760px) {
+      .header {
+        max-width: 720px;
+        margin: 18px auto 0;
+        border-radius: 18px;
+      }
+
+      .container {
+        padding-top: 18px;
+      }
+
+      .grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <div class="header">
+      <h1>Solicitud de copias</h1>
+      <p>Ingrese su ID para registrar una solicitud.</p>
+    </div>
+
+    <div class="container">
+      <div id="loginCard" class="card">
+        <div class="section-title">Ingreso</div>
+
+        <div class="field">
+          <label for="userId">ID del usuario</label>
+          <input type="text" id="userId" placeholder="Ejemplo: 1001" inputmode="numeric">
+        </div>
+
+        <button id="loginButton" class="button" onclick="searchUser()">Ingresar</button>
+
+        <div id="loginMessage" class="message"></div>
+      </div>
+
+      <div id="formCard" class="card hidden">
+        <div class="section-title">Formulario de solicitud</div>
+
+        <div class="user-box">
+          <div class="user-row"><strong>ID</strong><span id="displayId"></span></div>
+          <div class="user-row"><strong>Nombre</strong><span id="displayName"></span></div>
+          <div class="user-row"><strong>Etapa</strong><span id="displayStage"></span></div>
+        </div>
+
+        <div class="small-note">Complete los datos de la solicitud antes de enviarla.</div>
+
+        <form id="requestForm">
+          <input type="hidden" id="formId">
+
+          <div class="grid">
+            <div class="field">
+              <label for="nombre">Nombre</label>
+              <input type="text" id="nombre" readonly>
+            </div>
+
+            <div class="field">
+              <label for="etapa">Etapa</label>
+              <input type="text" id="etapa" readonly>
+            </div>
+          </div>
+
+          <div class="grid">
+            <div class="field">
+              <label for="grado">Grado / Año</label>
+              <select id="grado" required></select>
+            </div>
+
+            <div class="field">
+              <label for="seccion">Sección</label>
+              <select id="seccion" required></select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="materia">Materia</label>
+            <select id="materia" required></select>
+          </div>
+
+          <div class="grid">
+            <div class="field">
+              <label for="hojasOriginales">Número de hojas originales</label>
+              <input type="number" id="hojasOriginales" min="1" inputmode="numeric" oninput="updateTotal()" required>
+            </div>
+
+            <div class="field">
+              <label for="numeroCopias">Número de copias</label>
+              <input type="number" id="numeroCopias" min="1" inputmode="numeric" oninput="updateTotal()" required>
+            </div>
+          </div>
+
+          <div class="total-box">Total de copias: <span id="totalCopias">0</span></div>
+
+          <div class="grid">
+            <div class="field">
+              <label for="lado">Impresión</label>
+              <select id="lado" required></select>
+            </div>
+
+            <div class="field">
+              <label for="corte">Corte</label>
+              <select id="corte" required></select>
+            </div>
+          </div>
+
+          <div class="grid">
+            <div class="field">
+              <label for="grapado">Grapado</label>
+              <select id="grapado" required></select>
+            </div>
+
+            <div class="field">
+              <label for="objetoDestino">Objeto / Destino</label>
+              <select id="objetoDestino"></select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="observaciones">Observaciones</label>
+            <textarea id="observaciones" placeholder="Indique detalles adicionales de la solicitud."></textarea>
+          </div>
+
+          <div class="field">
+            <label for="comentario">Comentario</label>
+            <textarea id="comentario" placeholder="Comentario interno o información adicional."></textarea>
+          </div>
+
+          <div class="sticky-actions">
+            <button id="submitButton" type="button" class="button" onclick="submitForm()">Enviar solicitud</button>
+            <button type="button" class="button secondary" onclick="resetApp()">Registrar otra solicitud</button>
+          </div>
+
+          <div id="formMessage" class="message"></div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyO70Hwqz9ttRFAK6RdRcL7qLxBXqLHB86VhVLL0Lo4gQSm3yyKeb6SmMRKNaywCcVs/exec';
+
+    let currentUser = null;
+
+    document.addEventListener('DOMContentLoaded', function() {
+      loadCatalogs();
+
+      document.getElementById('userId').addEventListener('keydown', function(event) {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          searchUser();
+        }
+      });
+    });
+
+    function callApi(action, params = {}) {
+      return new Promise((resolve, reject) => {
+        const callbackName = 'callback_' + Date.now() + '_' + Math.floor(Math.random() * 100000);
+
+        params.action = action;
+        params.callback = callbackName;
+
+        const query = new URLSearchParams(params).toString();
+        const script = document.createElement('script');
+
+        window[callbackName] = function(response) {
+          delete window[callbackName];
+          document.body.removeChild(script);
+          resolve(response);
+        };
+
+        script.onerror = function() {
+          delete window[callbackName];
+          document.body.removeChild(script);
+          reject(new Error('No se pudo conectar con la base de datos.'));
+        };
+
+        script.src = SCRIPT_URL + '?' + query;
+        document.body.appendChild(script);
+      });
+    }
+
+    function showMessage(elementId, text, type) {
+      const element = document.getElementById(elementId);
+      element.textContent = text;
+      element.className = 'message ' + type;
+    }
+
+    function clearMessage(elementId) {
+      const element = document.getElementById(elementId);
+      element.textContent = '';
+      element.className = 'message';
+    }
+
+    function fillSelect(id, values) {
+      const select = document.getElementById(id);
+      select.innerHTML = '';
+
+      const emptyOption = document.createElement('option');
+      emptyOption.value = '';
+      emptyOption.textContent = 'Seleccione una opción';
+      select.appendChild(emptyOption);
+
+      values.forEach(value => {
+        const option = document.createElement('option');
+        option.value = value;
+        option.textContent = value;
+        select.appendChild(option);
+      });
+    }
+
+    async function loadCatalogs() {
+      try {
+        const response = await callApi('getCatalogs');
+
+        if (!response.success) {
+          showMessage('loginMessage', response.message || 'No se pudieron cargar los catálogos.', 'error');
+          return;
+        }
+
+        const catalogs = response.catalogs || {};
+
+        fillSelect('grado', catalogs.grados || []);
+        fillSelect('seccion', catalogs.secciones || []);
+        fillSelect('materia', catalogs.materias || []);
+        fillSelect('lado', catalogs.lado || ['Una sola cara', 'Ambos lados']);
+        fillSelect('corte', catalogs.corte || ['No cortada', 'Cortada']);
+        fillSelect('grapado', catalogs.grapado || ['No grapada', 'Grapada']);
+        fillSelect('objetoDestino', catalogs.objetoDestino || []);
+      } catch (error) {
+        showMessage('loginMessage', error.message, 'error');
+      }
+    }
+
+    async function searchUser() {
+      clearMessage('loginMessage');
+
+      const id = document.getElementById('userId').value.trim();
+      const button = document.getElementById('loginButton');
+
+      if (!id) {
+        showMessage('loginMessage', 'Debe ingresar un ID.', 'error');
+        return;
+      }
+
+      button.disabled = true;
+      button.textContent = 'Buscando...';
+
+      try {
+        const response = await callApi('getUser', { id });
+
+        if (!response.success) {
+          showMessage('loginMessage', response.message, 'error');
+          return;
+        }
+
+        currentUser = response.user;
+
+        document.getElementById('formId').value = currentUser.id;
+        document.getElementById('nombre').value = currentUser.nombre;
+        document.getElementById('etapa').value = currentUser.etapa;
+
+        document.getElementById('displayId').textContent = currentUser.id;
+        document.getElementById('displayName').textContent = currentUser.nombre;
+        document.getElementById('displayStage').textContent = currentUser.etapa;
+
+        document.getElementById('loginCard').classList.add('hidden');
+        document.getElementById('formCard').classList.remove('hidden');
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      } catch (error) {
+        showMessage('loginMessage', error.message, 'error');
+      } finally {
+        button.disabled = false;
+        button.textContent = 'Ingresar';
+      }
+    }
+
+    function updateTotal() {
+      const hojas = Number(document.getElementById('hojasOriginales').value || 0);
+      const copias = Number(document.getElementById('numeroCopias').value || 0);
+      const total = hojas * copias;
+
+      document.getElementById('totalCopias').textContent = total;
+    }
+
+    async function submitForm() {
+      clearMessage('formMessage');
+
+      if (!currentUser) {
+        showMessage('formMessage', 'Debe ingresar con un ID válido.', 'error');
+        return;
+      }
+
+      const grado = document.getElementById('grado').value;
+      const seccion = document.getElementById('seccion').value;
+      const materia = document.getElementById('materia').value;
+      const hojasOriginales = document.getElementById('hojasOriginales').value;
+      const numeroCopias = document.getElementById('numeroCopias').value;
+      const lado = document.getElementById('lado').value;
+      const corte = document.getElementById('corte').value;
+      const grapado = document.getElementById('grapado').value;
+
+      if (!grado || !seccion || !materia || !hojasOriginales || !numeroCopias || !lado || !corte || !grapado) {
+        showMessage('formMessage', 'Complete los campos obligatorios.', 'error');
+        return;
+      }
+
+      const button = document.getElementById('submitButton');
+
+      button.disabled = true;
+      button.textContent = 'Enviando...';
+
+      const formData = {
+        id: currentUser.id,
+        grado,
+        seccion,
+        materia,
+        hojasOriginales,
+        numeroCopias,
+        lado,
+        corte,
+        grapado,
+        objetoDestino: document.getElementById('objetoDestino').value,
+        observaciones: document.getElementById('observaciones').value,
+        comentario: document.getElementById('comentario').value
+      };
+
+      try {
+        const response = await callApi('submitRequest', formData);
+
+        if (!response.success) {
+          showMessage('formMessage', response.message, 'error');
+          return;
+        }
+
+        showMessage('formMessage', response.message + ' Total: ' + response.totalCopias + ' copias.', 'success');
+
+        document.getElementById('requestForm').reset();
+        document.getElementById('nombre').value = currentUser.nombre;
+        document.getElementById('etapa').value = currentUser.etapa;
+        document.getElementById('totalCopias').textContent = '0';
+
+      } catch (error) {
+        showMessage('formMessage', error.message, 'error');
+      } finally {
+        button.disabled = false;
+        button.textContent = 'Enviar solicitud';
+      }
+    }
+
+    function resetApp() {
+      currentUser = null;
+
+      document.getElementById('userId').value = '';
+      document.getElementById('requestForm').reset();
+      document.getElementById('totalCopias').textContent = '0';
+
+      clearMessage('loginMessage');
+      clearMessage('formMessage');
+
+      document.getElementById('formCard').classList.add('hidden');
+      document.getElementById('loginCard').classList.remove('hidden');
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>
