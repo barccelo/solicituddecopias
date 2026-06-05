@@ -124,15 +124,14 @@
               </div>
             </div>
 
-            <div class="grid">
-              <div class="field">
-                <label for="grapado">Grapado <span class="optional">(opcional)</span></label>
-                <select id="grapado"></select>
-              </div>
-              <div class="field">
-                <label for="objetoDestino">Objeto / Destino <span class="optional">(opcional)</span></label>
-                <select id="objetoDestino"></select>
-              </div>
+            <div class="field">
+              <label for="objetoDestino">Objeto / Destino <span class="optional">(opcional)</span></label>
+              <select id="objetoDestino"></select>
+            </div>
+
+            <div class="field">
+              <label for="grapado">Grapado <span class="optional">(opcional)</span></label>
+              <select id="grapado"></select>
             </div>
           </div>
 
@@ -279,11 +278,9 @@
         document.getElementById('displayStage').textContent = currentUser.etapa;
         document.getElementById('displayRole').textContent = currentUser.rol || 'Sin especificar';
 
-        const allowedGrades = currentUser.grados && currentUser.grados.length
-          ? currentUser.grados
-          : (catalogs.grados || []);
+        const gradeOptions = currentUser.opcionesGrado || [];
+        fillSelect('grado', gradeOptions.map(item => item.grado));
 
-        fillSelect('grado', allowedGrades);
         fillSelect(
           'objetoDestino',
           currentUser.destinos && currentUser.destinos.length
@@ -291,6 +288,11 @@
             : (catalogs.destinos || []),
           'Sin especificar'
         );
+
+        if (gradeOptions.length === 1) {
+          document.getElementById('grado').value = gradeOptions[0].grado;
+          updateGradeOptions();
+        }
 
         document.getElementById('loginCard').classList.add('hidden');
         document.getElementById('formCard').classList.remove('hidden');
@@ -313,18 +315,18 @@
     function updateGradeOptions() {
       const grade = document.getElementById('grado').value;
 
-      if (!grade) {
+      if (!grade || !currentUser) {
         fillSelect('seccion', []);
         fillSelect('materia', []);
         return;
       }
 
-      const sections = (catalogs.sectionsByGrade && catalogs.sectionsByGrade[grade]) || [];
-      let subjects = (catalogs.subjectsByGrade && catalogs.subjectsByGrade[grade]) || [];
+      const option = (currentUser.opcionesGrado || []).find(
+        item => item.grado === grade
+      );
 
-      if (currentUser.materias && currentUser.materias.length) {
-        subjects = subjects.filter(subject => currentUser.materias.includes(subject));
-      }
+      const sections = option ? option.secciones : [];
+      const subjects = option ? option.materias : [];
 
       fillSelect('seccion', sections);
       fillSelect('materia', subjects);
