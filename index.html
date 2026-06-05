@@ -100,6 +100,11 @@
               <select id="materia"></select>
             </div>
 
+            <div class="field">
+              <label for="objetoDestino">Objeto / Destino <span class="optional">(opcional)</span></label>
+              <select id="objetoDestino"></select>
+            </div>
+
             <div class="grid">
               <div class="field">
                 <label for="hojasOriginales">Número de hojas originales</label>
@@ -124,10 +129,6 @@
               </div>
             </div>
 
-            <div class="field">
-              <label for="objetoDestino">Objeto / Destino <span class="optional">(opcional)</span></label>
-              <select id="objetoDestino"></select>
-            </div>
 
             <div class="field">
               <label for="grapado">Grapado <span class="optional">(opcional)</span></label>
@@ -310,6 +311,25 @@
       document.getElementById('copiesSection').classList.toggle('hidden', type !== 'Copias');
       document.getElementById('reamSection').classList.toggle('hidden', type !== 'Resma de hojas');
       clearMessage('formMessage');
+    }
+
+    function gradeKey(value) {
+      const text = String(value || '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[ᵉᵒʳᵈᵗºª°\.]/g, '')
+        .toLowerCase();
+
+      const numberMatch = text.match(/\d+/);
+      const number = numberMatch ? numberMatch[0] : '';
+
+      let level = '';
+      if (/\bgrado\b/.test(text)) level = 'grado';
+      if (/\bano\b/.test(text) || /\baño\b/.test(String(value || '').toLowerCase())) level = 'ano';
+
+      return number && level
+        ? number + level
+        : text.replace(/[^a-z0-9]+/g, '');
     }
 
     function updateGradeOptions() {
