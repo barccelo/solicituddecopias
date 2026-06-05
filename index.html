@@ -3,629 +3,105 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Solicitud de copias</title>
-
+  <title>Solicitud de materiales</title>
   <style>
-    :root {
-      --primary: #8b0000;
-      --primary-dark: #650000;
-      --bg: #f2f2f2;
-      --card: #ffffff;
-      --text: #222222;
-      --muted: #666666;
-      --border: #dddddd;
-      --success: #0f7b3f;
-      --error: #b00020;
-      --warning-bg: #fff7e8;
-      --warning-border: #f1d39a;
-    }
-
-    * {
-      box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    html,
-    body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      min-height: 100%;
-      font-family: Arial, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-    }
-
-    body {
-      overflow-x: hidden;
-    }
-
-    .app {
-      width: 100%;
-      min-height: 100vh;
-      background: var(--bg);
-      padding-bottom: 20px;
-    }
-
-    .header {
-      background: var(--primary);
-      color: white;
-      padding: 24px 18px 22px;
-      text-align: center;
-      border-radius: 0 0 24px 24px;
-    }
-
-    .header h1 {
-      margin: 0;
-      font-size: 24px;
-      line-height: 1.2;
-    }
-
-    .header p {
-      margin: 8px 0 0;
-      font-size: 14px;
-      opacity: 0.95;
-    }
-
-    .container {
-      width: 100%;
-      max-width: 720px;
-      margin: 0 auto;
-      padding: 16px 12px;
-    }
-
-    .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 18px;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.08);
-      margin-bottom: 16px;
-    }
-
-    .section-title {
-      font-size: 19px;
-      font-weight: bold;
-      color: var(--primary);
-      margin-bottom: 16px;
-    }
-
-    .field {
-      margin-bottom: 16px;
-    }
-
-    label {
-      display: block;
-      font-size: 15px;
-      font-weight: bold;
-      margin-bottom: 7px;
-    }
-
-    input,
-    select,
-    textarea {
-      width: 100%;
-      min-height: 54px;
-      padding: 13px 14px;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      font-size: 17px;
-      background: white;
-      color: var(--text);
-      font-family: Arial, sans-serif;
-    }
-
-    textarea {
-      min-height: 100px;
-      resize: vertical;
-      line-height: 1.4;
-    }
-
-    input[readonly] {
-      background: #eeeeee;
-      color: #444444;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 0;
-    }
-
-    .button {
-      width: 100%;
-      min-height: 56px;
-      padding: 15px;
-      border: none;
-      border-radius: 14px;
-      background: var(--primary);
-      color: white;
-      font-weight: bold;
-      font-size: 17px;
-      cursor: pointer;
-    }
-
-    .button:active {
-      background: var(--primary-dark);
-      transform: scale(0.99);
-    }
-
-    .button.secondary {
-      background: #444444;
-      margin-top: 10px;
-    }
-
-    .button:disabled {
-      background: #999999;
-      cursor: not-allowed;
-    }
-
-    .message {
-      display: none;
-      margin-top: 14px;
-      padding: 13px;
-      border-radius: 12px;
-      font-size: 15px;
-      line-height: 1.4;
-    }
-
-    .message.success {
-      display: block;
-      background: #e7f5ec;
-      color: var(--success);
-      border: 1px solid #b7dfc6;
-    }
-
-    .message.error {
-      display: block;
-      background: #fdecef;
-      color: var(--error);
-      border: 1px solid #f4b6c1;
-    }
-
-    .message.info {
-      display: block;
-      background: #eef3ff;
-      color: #294a8d;
-      border: 1px solid #bdcbef;
-    }
-
-    .hidden {
-      display: none;
-    }
-
-    .user-box {
-      background: #f8f8f8;
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 14px;
-      margin-bottom: 18px;
-    }
-
-    .user-row {
-      padding: 9px 0;
-      border-bottom: 1px solid #e5e5e5;
-      font-size: 15px;
-    }
-
-    .user-row:last-child {
-      border-bottom: none;
-    }
-
-    .user-row strong {
-      display: block;
-      color: var(--muted);
-      margin-bottom: 3px;
-    }
-
-    .user-row span {
-      display: block;
-      font-weight: bold;
-      color: var(--text);
-    }
-
-    .total-box {
-      background: var(--warning-bg);
-      border: 1px solid var(--warning-border);
-      padding: 16px;
-      border-radius: 14px;
-      font-weight: bold;
-      margin-bottom: 18px;
-      font-size: 18px;
-      text-align: center;
-    }
-
-    .total-box span {
-      color: var(--primary);
-      font-size: 26px;
-    }
-
-    .sticky-actions {
-      position: sticky;
-      bottom: 0;
-      background: linear-gradient(to top, var(--bg) 85%, rgba(242,242,242,0));
-      padding-top: 16px;
-      padding-bottom: 8px;
-      margin-top: 8px;
-    }
-
-    .small-note {
-      color: var(--muted);
-      font-size: 14px;
-      line-height: 1.4;
-      margin-bottom: 16px;
-    }
-
-    @media (min-width: 760px) {
-      .header {
-        max-width: 720px;
-        margin: 18px auto 0;
-        border-radius: 18px;
-      }
-
-      .container {
-        padding-top: 18px;
-      }
-
-      .grid {
-        grid-template-columns: 1fr 1fr;
-        gap: 14px;
-      }
-    }
+    :root{--primary:#8b0000;--primary-dark:#650000;--bg:#f3f4f6;--card:#fff;--text:#202124;--muted:#666b73;--border:#dfe2e7;--success:#176b3a;--error:#a61b2b;--info:#294a8d}
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;min-height:100%;font-family:Arial,sans-serif;background:var(--bg);color:var(--text)}
+    .app{min-height:100vh;padding-bottom:24px}.header{background:var(--primary);color:#fff;padding:26px 18px 23px;text-align:center;border-radius:0 0 24px 24px}.header h1{margin:0;font-size:24px}.header p{margin:8px 0 0;font-size:14px;opacity:.94}
+    .container{width:100%;max-width:760px;margin:0 auto;padding:16px 12px}.card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:18px;box-shadow:0 5px 18px rgba(0,0,0,.07);margin-bottom:16px}.section-title{margin-bottom:17px;color:var(--primary);font-size:19px;font-weight:700}.field{margin-bottom:16px}label{display:block;margin-bottom:7px;font-size:15px;font-weight:700}.optional{font-weight:400;color:var(--muted)}
+    input,select,textarea{width:100%;min-height:52px;padding:13px 14px;border:1px solid var(--border);border-radius:12px;background:#fff;color:var(--text);font:inherit;font-size:16px}textarea{min-height:96px;resize:vertical}input[type=file]{min-height:auto;padding:12px}.grid{display:grid;grid-template-columns:1fr;gap:0}.button{width:100%;min-height:54px;border:0;border-radius:13px;padding:14px 16px;background:var(--primary);color:#fff;font-size:16px;font-weight:700;cursor:pointer}.button.secondary{margin-top:10px;background:#44474d}.button:disabled{background:#9a9a9a;cursor:wait}.hidden{display:none!important}.message{display:none;margin-top:14px;padding:13px;border-radius:11px;font-size:14px;line-height:1.4}.message.success{display:block;background:#e9f6ee;color:var(--success);border:1px solid #b9dfc7}.message.error{display:block;background:#fdecef;color:var(--error);border:1px solid #efb7c0}.message.info{display:block;background:#eef3ff;color:var(--info);border:1px solid #c5d1ef}.user-box{padding:14px;margin-bottom:17px;background:#f7f8fa;border:1px solid var(--border);border-radius:14px}.user-row{padding:8px 0;border-bottom:1px solid #e4e6ea;font-size:14px}.user-row:last-child{border-bottom:0}.user-row strong{display:block;margin-bottom:3px;color:var(--muted)}.total-box{margin-bottom:17px;padding:15px;text-align:center;font-size:17px;font-weight:700;background:#fff6e6;border:1px solid #efd39a;border-radius:13px}.total-box span{color:var(--primary);font-size:24px}.help{margin-top:7px;color:var(--muted);font-size:13px;line-height:1.35}.type-panel{margin-bottom:17px;padding:14px;background:#fafafa;border:1px solid var(--border);border-radius:14px}.upload-frame{width:0;height:0;border:0;position:absolute;visibility:hidden}
+    @media(min-width:760px){.header{max-width:760px;margin:18px auto 0;border-radius:18px}.grid{grid-template-columns:1fr 1fr;gap:14px}}
   </style>
 </head>
-
 <body>
   <div class="app">
-    <div class="header">
-      <h1>Solicitud de copias</h1>
-      <p>Ingrese su ID para registrar una solicitud.</p>
-    </div>
-
-    <div class="container">
-      <div id="loginCard" class="card">
+    <header class="header"><h1>Solicitud de materiales</h1><p>Copias y resmas de hojas</p></header>
+    <main class="container">
+      <section id="loginCard" class="card">
         <div class="section-title">Ingreso</div>
-
-        <div class="field">
-          <label for="userId">ID del usuario</label>
-          <input type="text" id="userId" placeholder="Ejemplo: 1001" inputmode="numeric">
-        </div>
-
-        <button id="loginButton" class="button" onclick="searchUser()">Ingresar</button>
-
+        <div class="field"><label for="userId">ID del usuario</label><input id="userId" type="text" inputmode="numeric" placeholder="Ejemplo: 1001"></div>
+        <button id="loginButton" class="button" type="button" onclick="searchUser()">Ingresar</button>
         <div id="loginMessage" class="message"></div>
-      </div>
+      </section>
 
-      <div id="formCard" class="card hidden">
-        <div class="section-title">Formulario de solicitud</div>
-
+      <section id="formCard" class="card hidden">
+        <div class="section-title">Nueva solicitud</div>
         <div class="user-box">
           <div class="user-row"><strong>ID</strong><span id="displayId"></span></div>
           <div class="user-row"><strong>Nombre</strong><span id="displayName"></span></div>
           <div class="user-row"><strong>Etapa</strong><span id="displayStage"></span></div>
         </div>
 
-        <div class="small-note">Complete los datos de la solicitud antes de enviarla.</div>
+        <form id="requestForm" onsubmit="return false;">
+          <div class="type-panel"><div class="field" style="margin-bottom:0"><label for="tipoSolicitud">Tipo de solicitud</label><select id="tipoSolicitud" onchange="updateRequestType()" required></select></div></div>
 
-        <form id="requestForm">
-          <input type="hidden" id="formId">
-
-          <div class="grid">
-            <div class="field">
-              <label for="nombre">Nombre</label>
-              <input type="text" id="nombre" readonly>
+          <div id="copiesSection" class="hidden">
+            <div class="grid">
+              <div class="field"><label for="grado">Grado / Año</label><select id="grado"></select></div>
+              <div class="field"><label for="seccion">Sección</label><select id="seccion"></select></div>
             </div>
-
-            <div class="field">
-              <label for="etapa">Etapa</label>
-              <input type="text" id="etapa" readonly>
+            <div class="field"><label for="materia">Materia</label><select id="materia"></select></div>
+            <div class="grid">
+              <div class="field"><label for="hojasOriginales">Número de hojas originales</label><input id="hojasOriginales" type="number" min="1" step="1" inputmode="numeric" oninput="updateTotal()"></div>
+              <div class="field"><label for="numeroJuegos">Número de juegos</label><input id="numeroJuegos" type="number" min="1" step="1" inputmode="numeric" oninput="updateTotal()"></div>
             </div>
-          </div>
-
-          <div class="grid">
-            <div class="field">
-              <label for="grado">Grado / Año</label>
-              <select id="grado" required></select>
+            <div class="total-box">Total de copias: <span id="totalCopias">0</span></div>
+            <div class="grid">
+              <div class="field"><label for="lado">Impresión</label><select id="lado"></select></div>
+              <div class="field"><label for="corte">Corte <span class="optional">(opcional)</span></label><select id="corte"></select></div>
             </div>
-
-            <div class="field">
-              <label for="seccion">Sección</label>
-              <select id="seccion" required></select>
+            <div class="grid">
+              <div class="field"><label for="grapado">Grapado <span class="optional">(opcional)</span></label><select id="grapado"></select></div>
+              <div class="field"><label for="objetoDestino">Objeto / Destino <span class="optional">(opcional)</span></label><select id="objetoDestino"></select></div>
             </div>
           </div>
 
-          <div class="field">
-            <label for="materia">Materia</label>
-            <select id="materia" required></select>
-          </div>
+          <div id="reamSection" class="hidden"><div class="field"><label for="cantidadResmas">Cantidad de resmas</label><input id="cantidadResmas" type="number" min="1" step="1" inputmode="numeric"></div></div>
 
-          <div class="grid">
-            <div class="field">
-              <label for="hojasOriginales">Número de hojas originales</label>
-              <input type="number" id="hojasOriginales" min="1" inputmode="numeric" oninput="updateTotal()" required>
-            </div>
+          <div class="field"><label for="archivo">Adjuntar archivo <span class="optional">(opcional)</span></label><input id="archivo" type="file"><div class="help">Tamaño máximo: 5 MB.</div></div>
+          <div class="field"><label for="observaciones">Observaciones <span class="optional">(opcional)</span></label><textarea id="observaciones" placeholder="Detalles adicionales de la solicitud"></textarea></div>
+          <div class="field"><label for="comentario">Comentario <span class="optional">(opcional)</span></label><textarea id="comentario" placeholder="Información adicional"></textarea></div>
 
-            <div class="field">
-              <label for="numeroCopias">Número de copias</label>
-              <input type="number" id="numeroCopias" min="1" inputmode="numeric" oninput="updateTotal()" required>
-            </div>
-          </div>
-
-          <div class="total-box">Total de copias: <span id="totalCopias">0</span></div>
-
-          <div class="grid">
-            <div class="field">
-              <label for="lado">Impresión</label>
-              <select id="lado" required></select>
-            </div>
-
-            <div class="field">
-              <label for="corte">Corte</label>
-              <select id="corte" required></select>
-            </div>
-          </div>
-
-          <div class="grid">
-            <div class="field">
-              <label for="grapado">Grapado</label>
-              <select id="grapado" required></select>
-            </div>
-
-            <div class="field">
-              <label for="objetoDestino">Objeto / Destino</label>
-              <select id="objetoDestino"></select>
-            </div>
-          </div>
-
-          <div class="field">
-            <label for="observaciones">Observaciones</label>
-            <textarea id="observaciones" placeholder="Indique detalles adicionales de la solicitud."></textarea>
-          </div>
-
-          <div class="field">
-            <label for="comentario">Comentario</label>
-            <textarea id="comentario" placeholder="Comentario interno o información adicional."></textarea>
-          </div>
-
-          <div class="sticky-actions">
-            <button id="submitButton" type="button" class="button" onclick="submitForm()">Enviar solicitud</button>
-            <button type="button" class="button secondary" onclick="resetApp()">Registrar otra solicitud</button>
-          </div>
-
+          <button id="submitButton" class="button" type="button" onclick="submitRequest()">Enviar solicitud</button>
+          <button class="button secondary" type="button" onclick="resetApp()">Cambiar de usuario</button>
           <div id="formMessage" class="message"></div>
         </form>
-      </div>
-    </div>
+      </section>
+    </main>
+    <iframe id="uploadFrame" name="uploadFrame" class="upload-frame"></iframe>
   </div>
 
   <script>
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyO70Hwqz9ttRFAK6RdRcL7qLxBXqLHB86VhVLL0Lo4gQSm3yyKeb6SmMRKNaywCcVs/exec';
+    const SCRIPT_URL='https://script.google.com/macros/s/AKfycbyO70Hwqz9ttRFAK6RdRcL7qLxBXqLHB86VhVLL0Lo4gQSm3yyKeb6SmMRKNaywCcVs/exec';
+    const MAX_FILE_SIZE=5*1024*1024;
+    let currentUser=null,pendingRequestId=null;
 
-    let currentUser = null;
+    document.addEventListener('DOMContentLoaded',()=>{loadCatalogs();document.getElementById('userId').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();searchUser();}});window.addEventListener('message',handleApiMessage);});
 
-    document.addEventListener('DOMContentLoaded', function() {
-      loadCatalogs();
+    function callApi(action,params={}){return new Promise((resolve,reject)=>{const callbackName='callback_'+Date.now()+'_'+Math.floor(Math.random()*100000);const query=new URLSearchParams({...params,action,callback:callbackName}).toString();const script=document.createElement('script');window[callbackName]=response=>{delete window[callbackName];script.remove();resolve(response)};script.onerror=()=>{delete window[callbackName];script.remove();reject(new Error('No se pudo conectar con la base de datos.'))};script.src=SCRIPT_URL+'?'+query;document.body.appendChild(script);});}
+    function showMessage(id,text,type){const el=document.getElementById(id);el.textContent=text;el.className='message '+type}
+    function clearMessage(id){const el=document.getElementById(id);el.textContent='';el.className='message'}
+    function fillSelect(id,values,placeholder='Seleccione una opción'){const select=document.getElementById(id);select.innerHTML='';const first=document.createElement('option');first.value='';first.textContent=placeholder;select.appendChild(first);(values||[]).forEach(value=>{const option=document.createElement('option');option.value=value;option.textContent=value;select.appendChild(option);});}
 
-      document.getElementById('userId').addEventListener('keydown', function(event) {
-        if (event.key === 'Enter') {
-          event.preventDefault();
-          searchUser();
-        }
-      });
-    });
+    async function loadCatalogs(){try{const response=await callApi('getCatalogs');if(!response.success){showMessage('loginMessage',response.message,'error');return}const c=response.catalogs||{};fillSelect('tipoSolicitud',c.tiposSolicitud||['Copias','Resma de hojas']);fillSelect('grado',c.grados||[]);fillSelect('seccion',c.secciones||[]);fillSelect('materia',c.materias||[]);fillSelect('lado',c.lado||['Una sola cara','Ambos lados']);fillSelect('corte',c.corte||['No cortada','Cortada'],'Sin especificar');fillSelect('grapado',c.grapado||['No grapada','Grapada'],'Sin especificar');fillSelect('objetoDestino',c.objetoDestino||[],'Sin especificar');}catch(error){showMessage('loginMessage',error.message,'error')}}
 
-    function callApi(action, params = {}) {
-      return new Promise((resolve, reject) => {
-        const callbackName = 'callback_' + Date.now() + '_' + Math.floor(Math.random() * 100000);
+    async function searchUser(){clearMessage('loginMessage');const id=document.getElementById('userId').value.trim();const button=document.getElementById('loginButton');if(!id){showMessage('loginMessage','Debe ingresar un ID.','error');return}button.disabled=true;button.textContent='Buscando...';try{const response=await callApi('getUser',{id});if(!response.success){showMessage('loginMessage',response.message,'error');return}currentUser=response.user;document.getElementById('displayId').textContent=currentUser.id;document.getElementById('displayName').textContent=currentUser.nombre;document.getElementById('displayStage').textContent=currentUser.etapa;document.getElementById('loginCard').classList.add('hidden');document.getElementById('formCard').classList.remove('hidden');window.scrollTo({top:0,behavior:'smooth'});}catch(error){showMessage('loginMessage',error.message,'error')}finally{button.disabled=false;button.textContent='Ingresar'}}
 
-        params.action = action;
-        params.callback = callbackName;
+    function updateRequestType(){const type=document.getElementById('tipoSolicitud').value;document.getElementById('copiesSection').classList.toggle('hidden',type!=='Copias');document.getElementById('reamSection').classList.toggle('hidden',type!=='Resma de hojas');clearMessage('formMessage')}
+    function updateTotal(){const originals=Number(document.getElementById('hojasOriginales').value||0);const sets=Number(document.getElementById('numeroJuegos').value||0);document.getElementById('totalCopias').textContent=originals*sets}
 
-        const query = new URLSearchParams(params).toString();
-        const script = document.createElement('script');
-
-        window[callbackName] = function(response) {
-          delete window[callbackName];
-          document.body.removeChild(script);
-          resolve(response);
-        };
-
-        script.onerror = function() {
-          delete window[callbackName];
-          document.body.removeChild(script);
-          reject(new Error('No se pudo conectar con la base de datos.'));
-        };
-
-        script.src = SCRIPT_URL + '?' + query;
-        document.body.appendChild(script);
-      });
+    async function submitRequest(){clearMessage('formMessage');if(!currentUser){showMessage('formMessage','Debe ingresar con un ID válido.','error');return}const type=document.getElementById('tipoSolicitud').value;if(!type){showMessage('formMessage','Seleccione el tipo de solicitud.','error');return}const payload={requestId:(crypto.randomUUID?crypto.randomUUID():Date.now()+'_'+Math.random()),id:currentUser.id,tipoSolicitud:type,observaciones:document.getElementById('observaciones').value.trim(),comentario:document.getElementById('comentario').value.trim()};
+      if(type==='Copias'){payload.grado=document.getElementById('grado').value;payload.seccion=document.getElementById('seccion').value;payload.materia=document.getElementById('materia').value;payload.hojasOriginales=document.getElementById('hojasOriginales').value;payload.numeroJuegos=document.getElementById('numeroJuegos').value;payload.lado=document.getElementById('lado').value;payload.corte=document.getElementById('corte').value;payload.grapado=document.getElementById('grapado').value;payload.objetoDestino=document.getElementById('objetoDestino').value;if(!payload.grado||!payload.seccion||!payload.materia||!payload.hojasOriginales||!payload.numeroJuegos||!payload.lado){showMessage('formMessage','Complete grado/año, sección, materia, hojas originales, número de juegos e impresión.','error');return}}else{payload.cantidadResmas=document.getElementById('cantidadResmas').value;if(!payload.cantidadResmas){showMessage('formMessage','Ingrese la cantidad de resmas.','error');return}}
+      const file=document.getElementById('archivo').files[0];if(file){if(file.size>MAX_FILE_SIZE){showMessage('formMessage','El archivo supera el límite de 5 MB.','error');return}showMessage('formMessage','Preparando archivo...','info');try{payload.file=await readFile(file)}catch(error){showMessage('formMessage','No se pudo leer el archivo.','error');return}}
+      pendingRequestId=payload.requestId;setSubmitting(true);showMessage('formMessage','Enviando solicitud...','info');postPayload(payload);
     }
 
-    function showMessage(elementId, text, type) {
-      const element = document.getElementById(elementId);
-      element.textContent = text;
-      element.className = 'message ' + type;
-    }
-
-    function clearMessage(elementId) {
-      const element = document.getElementById(elementId);
-      element.textContent = '';
-      element.className = 'message';
-    }
-
-    function fillSelect(id, values) {
-      const select = document.getElementById(id);
-      select.innerHTML = '';
-
-      const emptyOption = document.createElement('option');
-      emptyOption.value = '';
-      emptyOption.textContent = 'Seleccione una opción';
-      select.appendChild(emptyOption);
-
-      values.forEach(value => {
-        const option = document.createElement('option');
-        option.value = value;
-        option.textContent = value;
-        select.appendChild(option);
-      });
-    }
-
-    async function loadCatalogs() {
-      try {
-        const response = await callApi('getCatalogs');
-
-        if (!response.success) {
-          showMessage('loginMessage', response.message || 'No se pudieron cargar los catálogos.', 'error');
-          return;
-        }
-
-        const catalogs = response.catalogs || {};
-
-        fillSelect('grado', catalogs.grados || []);
-        fillSelect('seccion', catalogs.secciones || []);
-        fillSelect('materia', catalogs.materias || []);
-        fillSelect('lado', catalogs.lado || ['Una sola cara', 'Ambos lados']);
-        fillSelect('corte', catalogs.corte || ['No cortada', 'Cortada']);
-        fillSelect('grapado', catalogs.grapado || ['No grapada', 'Grapada']);
-        fillSelect('objetoDestino', catalogs.objetoDestino || []);
-      } catch (error) {
-        showMessage('loginMessage', error.message, 'error');
-      }
-    }
-
-    async function searchUser() {
-      clearMessage('loginMessage');
-
-      const id = document.getElementById('userId').value.trim();
-      const button = document.getElementById('loginButton');
-
-      if (!id) {
-        showMessage('loginMessage', 'Debe ingresar un ID.', 'error');
-        return;
-      }
-
-      button.disabled = true;
-      button.textContent = 'Buscando...';
-
-      try {
-        const response = await callApi('getUser', { id });
-
-        if (!response.success) {
-          showMessage('loginMessage', response.message, 'error');
-          return;
-        }
-
-        currentUser = response.user;
-
-        document.getElementById('formId').value = currentUser.id;
-        document.getElementById('nombre').value = currentUser.nombre;
-        document.getElementById('etapa').value = currentUser.etapa;
-
-        document.getElementById('displayId').textContent = currentUser.id;
-        document.getElementById('displayName').textContent = currentUser.nombre;
-        document.getElementById('displayStage').textContent = currentUser.etapa;
-
-        document.getElementById('loginCard').classList.add('hidden');
-        document.getElementById('formCard').classList.remove('hidden');
-
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-
-      } catch (error) {
-        showMessage('loginMessage', error.message, 'error');
-      } finally {
-        button.disabled = false;
-        button.textContent = 'Ingresar';
-      }
-    }
-
-    function updateTotal() {
-      const hojas = Number(document.getElementById('hojasOriginales').value || 0);
-      const copias = Number(document.getElementById('numeroCopias').value || 0);
-      const total = hojas * copias;
-
-      document.getElementById('totalCopias').textContent = total;
-    }
-
-    async function submitForm() {
-      clearMessage('formMessage');
-
-      if (!currentUser) {
-        showMessage('formMessage', 'Debe ingresar con un ID válido.', 'error');
-        return;
-      }
-
-      const grado = document.getElementById('grado').value;
-      const seccion = document.getElementById('seccion').value;
-      const materia = document.getElementById('materia').value;
-      const hojasOriginales = document.getElementById('hojasOriginales').value;
-      const numeroCopias = document.getElementById('numeroCopias').value;
-      const lado = document.getElementById('lado').value;
-      const corte = document.getElementById('corte').value;
-      const grapado = document.getElementById('grapado').value;
-
-      if (!grado || !seccion || !materia || !hojasOriginales || !numeroCopias || !lado || !corte || !grapado) {
-        showMessage('formMessage', 'Complete los campos obligatorios.', 'error');
-        return;
-      }
-
-      const button = document.getElementById('submitButton');
-
-      button.disabled = true;
-      button.textContent = 'Enviando...';
-
-      const formData = {
-        id: currentUser.id,
-        grado,
-        seccion,
-        materia,
-        hojasOriginales,
-        numeroCopias,
-        lado,
-        corte,
-        grapado,
-        objetoDestino: document.getElementById('objetoDestino').value,
-        observaciones: document.getElementById('observaciones').value,
-        comentario: document.getElementById('comentario').value
-      };
-
-      try {
-        const response = await callApi('submitRequest', formData);
-
-        if (!response.success) {
-          showMessage('formMessage', response.message, 'error');
-          return;
-        }
-
-        showMessage('formMessage', response.message + ' Total: ' + response.totalCopias + ' copias.', 'success');
-
-        document.getElementById('requestForm').reset();
-        document.getElementById('nombre').value = currentUser.nombre;
-        document.getElementById('etapa').value = currentUser.etapa;
-        document.getElementById('totalCopias').textContent = '0';
-
-      } catch (error) {
-        showMessage('formMessage', error.message, 'error');
-      } finally {
-        button.disabled = false;
-        button.textContent = 'Enviar solicitud';
-      }
-    }
-
-    function resetApp() {
-      currentUser = null;
-
-      document.getElementById('userId').value = '';
-      document.getElementById('requestForm').reset();
-      document.getElementById('totalCopias').textContent = '0';
-
-      clearMessage('loginMessage');
-      clearMessage('formMessage');
-
-      document.getElementById('formCard').classList.add('hidden');
-      document.getElementById('loginCard').classList.remove('hidden');
-
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+    function readFile(file){return new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>{const result=String(reader.result||'');const comma=result.indexOf(',');resolve({name:file.name,mimeType:file.type||'application/octet-stream',base64:comma>=0?result.slice(comma+1):result});};reader.onerror=reject;reader.readAsDataURL(file);});}
+    function postPayload(payload){const form=document.createElement('form');form.method='POST';form.action=SCRIPT_URL;form.target='uploadFrame';form.style.display='none';const input=document.createElement('input');input.type='hidden';input.name='payload';input.value=JSON.stringify(payload);form.appendChild(input);document.body.appendChild(form);form.submit();form.remove();}
+    function handleApiMessage(event){const data=event.data;if(!data||data.source!=='solicitud-copias-api')return;const response=data.response||{};if(pendingRequestId&&response.requestId!==pendingRequestId)return;pendingRequestId=null;setSubmitting(false);if(!response.success){showMessage('formMessage',response.message||'No se pudo registrar la solicitud.','error');return}showMessage('formMessage',response.message,'success');resetFormFields();}
+    function setSubmitting(state){const button=document.getElementById('submitButton');button.disabled=state;button.textContent=state?'Enviando...':'Enviar solicitud'}
+    function resetFormFields(){document.getElementById('requestForm').reset();document.getElementById('copiesSection').classList.add('hidden');document.getElementById('reamSection').classList.add('hidden');document.getElementById('totalCopias').textContent='0'}
+    function resetApp(){currentUser=null;pendingRequestId=null;document.getElementById('userId').value='';resetFormFields();clearMessage('loginMessage');clearMessage('formMessage');document.getElementById('formCard').classList.add('hidden');document.getElementById('loginCard').classList.remove('hidden');window.scrollTo({top:0,behavior:'smooth'})}
   </script>
 </body>
 </html>
