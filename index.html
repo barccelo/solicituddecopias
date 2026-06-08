@@ -503,16 +503,18 @@
           <input id="fechaEntrega" type="date">
         </div>
 
-        <div id="deliveryBlockField" class="field hidden">
-          <label for="bloqueEntrega">Horario sugerido</label>
-          <select id="bloqueEntrega" onchange="applySuggestedTime()">
-            <option value="">Seleccione un bloque</option>
-          </select>
-        </div>
+        <div class="grid">
+          <div id="deliveryBlockField" class="field hidden">
+            <label for="bloqueEntrega">Hora académica</label>
+            <select id="bloqueEntrega" onchange="applySuggestedTime()">
+              <option value="">Seleccione un bloque</option>
+            </select>
+          </div>
 
-        <div class="field">
-          <label for="horaEntrega">Hora de entrega</label>
-          <input id="horaEntrega" type="time">
+          <div class="field">
+            <label for="horaEntrega">Hora de entrega</label>
+            <input id="horaEntrega" type="time">
+          </div>
         </div>
 
         <div class="field">
