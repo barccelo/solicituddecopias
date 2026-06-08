@@ -241,6 +241,51 @@
       font-weight:700;
     }
 
+    .search-select {
+      position:relative;
+    }
+
+    .search-select-list {
+      position:absolute;
+      z-index:20;
+      left:0;
+      right:0;
+      top:calc(100% + 6px);
+      max-height:240px;
+      overflow-y:auto;
+      background:#fff;
+      border:1px solid var(--border);
+      border-radius:12px;
+      box-shadow:0 8px 20px rgba(0,0,0,.12);
+    }
+
+    .search-select-option {
+      width:100%;
+      padding:12px 14px;
+      border:0;
+      border-bottom:1px solid #eceef1;
+      background:#fff;
+      color:var(--text);
+      text-align:left;
+      font:inherit;
+      cursor:pointer;
+    }
+
+    .search-select-option:last-child {
+      border-bottom:0;
+    }
+
+    .search-select-option:active,
+    .search-select-option:hover {
+      background:#f5f6f8;
+    }
+
+    .search-select-empty {
+      padding:12px 14px;
+      color:var(--muted);
+      font-size:14px;
+    }
+
     @media(min-width:760px) {
       .header {
         max-width:760px;
@@ -317,17 +362,28 @@
             </div>
 
             <div id="subjectField" class="field hidden">
-              <label for="materiaSearch">Buscar materia</label>
-              <input
-                id="materiaSearch"
-                type="search"
-                placeholder="Escriba para filtrar"
-                oninput="filterSubjects()"
-                autocomplete="off"
-              >
+              <label for="materiaInput">Materia</label>
 
-              <label for="materia" style="margin-top:12px">Materia</label>
-              <select id="materia"></select>
+              <div class="search-select">
+                <input
+                  id="materiaInput"
+                  type="search"
+                  placeholder="Buscar o seleccionar materia"
+                  autocomplete="off"
+                  onfocus="openSubjectList()"
+                  oninput="filterSubjectList()"
+                >
+
+                <input
+                  id="materia"
+                  type="hidden"
+                >
+
+                <div
+                  id="materiaList"
+                  class="search-select-list hidden"
+                ></div>
+              </div>
             </div>
           </div>
 
@@ -620,7 +676,8 @@ function updateDestinationRule(){
 
   renderGradeOptions(currentUser.grados||[]);
   renderSectionOptions([]);
-  fillSelect('materia',[]);
+  currentSubjectOptions=[];
+  resetSubjectControl();
 }
 
 function renderCheckboxGroup(containerId,values,allLabel,onChange){
@@ -710,56 +767,114 @@ function renderSectionOptions(values){
 }
 
 function onGradesChanged(){
-  const selectedGrades=selectedCheckboxValues('gradeOptions');
+  const selectedGrades=
+    selectedCheckboxValues('gradeOptions');
 
   if(!selectedGrades.length){
     renderSectionOptions([]);
     currentSubjectOptions=[];
-    document.getElementById('materiaSearch').value='';
-    fillSelect('materia',[]);
+    resetSubjectControl();
     return;
   }
 
   const sections=[
     ...new Set(
       selectedGrades.flatMap(grade=>
-        (catalogs.seccionesPorGrado &&
-          catalogs.seccionesPorGrado[grade]) || []
+        (
+          catalogs.seccionesPorGrado &&
+          catalogs.seccionesPorGrado[grade]
+        ) || []
       )
     )
   ];
 
-  currentSubjectOptions=(currentUser.materias||[]).filter(subject=>
-    selectedGrades.every(grade=>
-      (
-        (catalogs.materiasPorGrado &&
-          catalogs.materiasPorGrado[grade]) || []
-      ).includes(subject)
-    )
-  );
+  currentSubjectOptions=
+    (currentUser.materias||[]).filter(subject=>
+      selectedGrades.every(grade=>
+        (
+          (
+            catalogs.materiasPorGrado &&
+            catalogs.materiasPorGrado[grade]
+          ) || []
+        ).includes(subject)
+      )
+    );
 
   renderSectionOptions(sections);
-  document.getElementById('materiaSearch').value='';
-  fillSelect('materia',currentSubjectOptions);
+  resetSubjectControl();
 }
 
-function filterSubjects(){
-  const query=normalizeText(
-    document.getElementById('materiaSearch').value
-  );
+function resetSubjectControl(){
+  document.getElementById('materiaInput').value='';
+  document.getElementById('materia').value='';
+  document
+    .getElementById('materiaList')
+    .classList.add('hidden');
+  renderSubjectList(currentSubjectOptions);
+}
 
-  const currentValue=document.getElementById('materia').value;
+function openSubjectList(){
+  renderSubjectList(currentSubjectOptions);
+  document
+    .getElementById('materiaList')
+    .classList.remove('hidden');
+}
+
+function filterSubjectList(){
+  const query=normalizeText(
+    document.getElementById('materiaInput').value
+  );
 
   const filtered=currentSubjectOptions.filter(subject=>
     normalizeText(subject).includes(query)
   );
 
-  fillSelect('materia',filtered);
-
-  if(filtered.includes(currentValue)){
-    document.getElementById('materia').value=currentValue;
-  }
+  document.getElementById('materia').value='';
+  renderSubjectList(filtered);
+  document
+    .getElementById('materiaList')
+    .classList.remove('hidden');
 }
+
+function renderSubjectList(values){
+  const list=document.getElementById('materiaList');
+  list.innerHTML='';
+
+  if(!values.length){
+    const empty=document.createElement('div');
+    empty.className='search-select-empty';
+    empty.textContent='No hay materias coincidentes';
+    list.appendChild(empty);
+    return;
+  }
+
+  values.forEach(subject=>{
+    const option=document.createElement('button');
+    option.type='button';
+    option.className='search-select-option';
+    option.textContent=subject;
+
+    option.addEventListener('click',()=>{
+      document.getElementById('materiaInput').value=subject;
+      document.getElementById('materia').value=subject;
+      list.classList.add('hidden');
+    });
+
+    list.appendChild(option);
+  });
+}
+
+document.addEventListener('click',event=>{
+  const control=event.target.closest('.search-select');
+
+  if(!control){
+    const list=document.getElementById('materiaList');
+
+    if(list){
+      list.classList.add('hidden');
+    }
+  }
+});
 function clearAcademicSelections(){
   document.getElementById('academicFields').classList.add('hidden');
   document.getElementById('gradeField').classList.add('hidden');
@@ -768,10 +883,8 @@ function clearAcademicSelections(){
 
   document.getElementById('gradeOptions').innerHTML='';
   document.getElementById('sectionOptions').innerHTML='';
-  document.getElementById('materiaSearch').value='';
-
   currentSubjectOptions=[];
-  fillSelect('materia',[]);
+  resetSubjectControl();
 }
 
 function updateTotal(){
