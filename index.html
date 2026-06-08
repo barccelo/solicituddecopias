@@ -317,7 +317,16 @@
             </div>
 
             <div id="subjectField" class="field hidden">
-              <label for="materia">Materia</label>
+              <label for="materiaSearch">Buscar materia</label>
+              <input
+                id="materiaSearch"
+                type="search"
+                placeholder="Escriba para filtrar"
+                oninput="filterSubjects()"
+                autocomplete="off"
+              >
+
+              <label for="materia" style="margin-top:12px">Materia</label>
               <select id="materia"></select>
             </div>
           </div>
@@ -335,7 +344,10 @@
           </div>
 
           <div class="total-box">
-            Total de copias: <span id="totalCopias">0</span>
+            <div>Total de copias: <span id="totalCopias">0</span></div>
+            <div style="margin-top:8px">
+              Total de hojas: <span id="totalHojasCopias">0</span>
+            </div>
           </div>
 
           <div class="field">
@@ -343,7 +355,7 @@
 
             <div class="check-list">
               <label class="check-option">
-                <input id="ambosLados" type="checkbox">
+                <input id="ambosLados" type="checkbox" onchange="updateTotal()">
                 <span>Imprimir por ambos lados</span>
               </label>
 
@@ -400,6 +412,7 @@ const SCRIPT_URL='https://script.google.com/macros/s/AKfycbw41nIIwyDbFgCOL-0-3Hf
 
 let currentUser=null;
 let catalogs=null;
+let currentSubjectOptions=[];
 
 document.addEventListener('DOMContentLoaded',()=>{
   loadCatalogs();
@@ -701,6 +714,8 @@ function onGradesChanged(){
 
   if(!selectedGrades.length){
     renderSectionOptions([]);
+    currentSubjectOptions=[];
+    document.getElementById('materiaSearch').value='';
     fillSelect('materia',[]);
     return;
   }
@@ -714,7 +729,7 @@ function onGradesChanged(){
     )
   ];
 
-  const commonSubjects=(currentUser.materias||[]).filter(subject=>
+  currentSubjectOptions=(currentUser.materias||[]).filter(subject=>
     selectedGrades.every(grade=>
       (
         (catalogs.materiasPorGrado &&
@@ -724,9 +739,27 @@ function onGradesChanged(){
   );
 
   renderSectionOptions(sections);
-  fillSelect('materia',commonSubjects);
+  document.getElementById('materiaSearch').value='';
+  fillSelect('materia',currentSubjectOptions);
 }
 
+function filterSubjects(){
+  const query=normalizeText(
+    document.getElementById('materiaSearch').value
+  );
+
+  const currentValue=document.getElementById('materia').value;
+
+  const filtered=currentSubjectOptions.filter(subject=>
+    normalizeText(subject).includes(query)
+  );
+
+  fillSelect('materia',filtered);
+
+  if(filtered.includes(currentValue)){
+    document.getElementById('materia').value=currentValue;
+  }
+}
 function clearAcademicSelections(){
   document.getElementById('academicFields').classList.add('hidden');
   document.getElementById('gradeField').classList.add('hidden');
@@ -735,7 +768,9 @@ function clearAcademicSelections(){
 
   document.getElementById('gradeOptions').innerHTML='';
   document.getElementById('sectionOptions').innerHTML='';
+  document.getElementById('materiaSearch').value='';
 
+  currentSubjectOptions=[];
   fillSelect('materia',[]);
 }
 
@@ -746,10 +781,23 @@ function updateTotal(){
   const games=
     Number(document.getElementById('numeroJuegos').value||0);
 
-  document.getElementById('totalCopias').textContent=
-    originals*games;
-}
+  const bothSides=
+    document.getElementById('ambosLados').checked;
 
+  const totalCopies=
+    originals*games;
+
+  const totalSheets=
+    bothSides
+      ? Math.ceil(originals/2)*games
+      : totalCopies;
+
+  document.getElementById('totalCopias').textContent=
+    totalCopies.toLocaleString('es-VE');
+
+  document.getElementById('totalHojasCopias').textContent=
+    totalSheets.toLocaleString('es-VE');
+}
 function updateReamTotal(){
   const reams=
     Number(document.getElementById('cantidadResmas').value||0);
@@ -934,6 +982,7 @@ function resetFormFields(){
     .classList.add('hidden');
 
   document.getElementById('totalCopias').textContent='0';
+  document.getElementById('totalHojasCopias').textContent='0';
   document.getElementById('totalHojas').textContent='0';
 
   clearAcademicSelections();
