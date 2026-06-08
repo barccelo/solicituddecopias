@@ -208,16 +208,18 @@
 
     .check-list {
       display:grid;
-      gap:10px;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:8px;
     }
 
     .check-option {
       display:flex;
       align-items:center;
-      gap:10px;
-      padding:12px 14px;
+      gap:8px;
+      min-height:44px;
+      padding:9px 11px;
       border:1px solid var(--border);
-      border-radius:12px;
+      border-radius:11px;
       background:#fff;
       font-weight:400;
       margin:0;
@@ -237,8 +239,29 @@
     }
 
     .check-option.all-option {
+      grid-column:1 / -1;
       background:#f7f8fa;
       font-weight:700;
+    }
+
+    .totals-grid {
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:10px;
+      align-items:stretch;
+    }
+
+    .total-item {
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      min-height:72px;
+      padding:10px 8px;
+    }
+
+    .total-item span {
+      display:block;
+      margin-top:4px;
     }
 
     .search-select {
@@ -284,6 +307,27 @@
       padding:12px 14px;
       color:var(--muted);
       font-size:14px;
+    }
+
+    @media(max-width:380px) {
+      .check-list {
+        grid-template-columns:1fr;
+      }
+
+      .totals-grid {
+        grid-template-columns:repeat(2,minmax(0,1fr));
+        gap:6px;
+      }
+
+      .total-item {
+        min-height:66px;
+        padding:8px 4px;
+        font-size:14px;
+      }
+
+      .total-item span {
+        font-size:22px;
+      }
     }
 
     @media(min-width:760px) {
@@ -399,10 +443,15 @@
             </div>
           </div>
 
-          <div class="total-box">
-            <div>Total de copias: <span id="totalCopias">0</span></div>
-            <div style="margin-top:8px">
-              Total de hojas: <span id="totalHojasCopias">0</span>
+          <div class="total-box totals-grid">
+            <div class="total-item">
+              <div>Total de copias</div>
+              <span id="totalCopias">0</span>
+            </div>
+
+            <div class="total-item">
+              <div>Total de hojas</div>
+              <span id="totalHojasCopias">0</span>
             </div>
           </div>
 
