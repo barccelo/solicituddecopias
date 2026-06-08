@@ -403,6 +403,23 @@
           <select id="objetoDestino" onchange="updateDestinationRule()"></select>
         </div>
 
+        <div id="sportsField" class="field hidden">
+          <label for="disciplinaDeportiva">Disciplina deportiva</label>
+          <select id="disciplinaDeportiva">
+            <option value="">Seleccione una disciplina</option>
+            <option value="Ajedrez">Ajedrez</option>
+            <option value="Atletismo">Atletismo</option>
+            <option value="Astronomía">Astronomía</option>
+            <option value="Baloncesto">Baloncesto</option>
+            <option value="Béisbol">Béisbol</option>
+            <option value="Fútbol Campo">Fútbol Campo</option>
+            <option value="Fútbol Sala">Fútbol Sala</option>
+            <option value="Música">Música</option>
+            <option value="Robótica">Robótica</option>
+            <option value="Tenis">Tenis</option>
+          </select>
+        </div>
+
         <div id="copiesSection" class="hidden">
           <div id="academicFields" class="hidden">
             <div id="gradeField" class="field hidden">
@@ -438,6 +455,23 @@
                   class="search-select-list hidden"
                 ></div>
               </div>
+            </div>
+
+            <div id="sportsField" class="field hidden">
+              <label for="disciplinaDeportiva">Disciplina deportiva</label>
+              <select id="disciplinaDeportiva">
+                <option value="">Seleccione una disciplina</option>
+                <option value="Ajedrez">Ajedrez</option>
+                <option value="Atletismo">Atletismo</option>
+                <option value="Astronomía">Astronomía</option>
+                <option value="Baloncesto">Baloncesto</option>
+                <option value="Béisbol">Béisbol</option>
+                <option value="Fútbol Campo">Fútbol Campo</option>
+                <option value="Fútbol Sala">Fútbol Sala</option>
+                <option value="Música">Música</option>
+                <option value="Robótica">Robótica</option>
+                <option value="Tenis">Tenis</option>
+              </select>
             </div>
           </div>
 
@@ -777,9 +811,26 @@ function updateRequestType(){
   updateDestinationRule();
 }
 
+function updateSportsField(){
+  const stage=
+    document.getElementById('etapaDestino').value;
+
+  const show=
+    normalizeStage(stage)==='clubdeportivo';
+
+  document
+    .getElementById('sportsField')
+    .classList.toggle('hidden',!show);
+
+  if(!show){
+    document.getElementById('disciplinaDeportiva').value='';
+  }
+}
+
 function updateStage(){
   const stage=document.getElementById('etapaDestino').value;
 
+  updateSportsField();
   updateDeliverySchedule();
 
   const permittedDestinations=(currentUser.destinos||[]).filter(destination=>
@@ -790,12 +841,18 @@ function updateStage(){
   );
 
   fillSelect('objetoDestino',permittedDestinations);
+  document.getElementById('academicFields').classList.add('hidden');
+  document.getElementById('sportsField').classList.add('hidden');
   clearAcademicSelections();
 }
 
 function updateDestinationRule(){
   const type=document.getElementById('tipoSolicitud').value;
   const rule=getCurrentRule();
+  const stage=document.getElementById('etapaDestino').value;
+
+  const showSports=
+    normalizeStage(stage)==='clubdeportivo';
 
   const showAcademic=
     type==='Copias' &&
@@ -804,9 +861,28 @@ function updateDestinationRule(){
     rule &&
     (rule.usaGrado||rule.usaSeccion||rule.usaMateria);
 
+  const showSharedArea=
+    showAcademic||showSports;
+
   document
     .getElementById('academicFields')
-    .classList.toggle('hidden',!showAcademic);
+    .classList.toggle('hidden',!showSharedArea);
+
+  document
+    .getElementById('sportsField')
+    .classList.toggle('hidden',!showSports);
+
+  if(showSports){
+    document.getElementById('gradeField').classList.add('hidden');
+    document.getElementById('sectionField').classList.add('hidden');
+    document.getElementById('subjectField').classList.add('hidden');
+
+    document.getElementById('gradeOptions').innerHTML='';
+    document.getElementById('sectionOptions').innerHTML='';
+    currentSubjectOptions=[];
+    resetSubjectControl();
+    return;
+  }
 
   if(!showAcademic){
     clearAcademicSelections();
@@ -830,7 +906,6 @@ function updateDestinationRule(){
   currentSubjectOptions=[];
   resetSubjectControl();
 }
-
 function renderCheckboxGroup(containerId,values,allLabel,onChange){
   const container=document.getElementById(containerId);
   container.innerHTML='';
@@ -1032,6 +1107,10 @@ function clearAcademicSelections(){
   document.getElementById('sectionField').classList.add('hidden');
   document.getElementById('subjectField').classList.add('hidden');
 
+  if(normalizeStage(document.getElementById('etapaDestino').value)!=='clubdeportivo'){
+    document.getElementById('sportsField').classList.add('hidden');
+  }
+
   document.getElementById('gradeOptions').innerHTML='';
   document.getElementById('sectionOptions').innerHTML='';
   currentSubjectOptions=[];
@@ -1119,6 +1198,8 @@ async function submitRequest(){
       document.getElementById('horaEntrega').value,
     bloqueEntrega:
       document.getElementById('bloqueEntrega').value,
+    disciplinaDeportiva:
+      document.getElementById('disciplinaDeportiva').value,
     comentario:
       document.getElementById('comentario').value.trim()
   };
@@ -1266,6 +1347,8 @@ function resetFormFields(){
   document.getElementById('totalHojasCopias').textContent='0';
   document.getElementById('totalHojas').textContent='0';
   document.getElementById('horaEntrega').value='';
+  document.getElementById('disciplinaDeportiva').value='';
+  document.getElementById('sportsField').classList.add('hidden');
   document.getElementById('bloqueEntrega').innerHTML='<option value="">Seleccione un bloque</option>';
   document.getElementById('deliveryBlockField').classList.add('hidden');
 
