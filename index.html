@@ -440,8 +440,25 @@
         </div>
 
         <div class="field">
-          <label for="observaciones">Observaciones <span class="optional">(opcional)</span></label>
-          <textarea id="observaciones"></textarea>
+          <label for="descripcion">Descripción <span class="optional">(opcional)</span></label>
+          <textarea id="descripcion" placeholder="Indique los detalles de la solicitud"></textarea>
+        </div>
+
+        <div class="field">
+          <label for="fechaEntrega">Fecha de entrega</label>
+          <input id="fechaEntrega" type="date">
+        </div>
+
+        <div id="deliveryBlockField" class="field hidden">
+          <label for="bloqueEntrega">Horario sugerido</label>
+          <select id="bloqueEntrega" onchange="applySuggestedTime()">
+            <option value="">Seleccione un bloque</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="horaEntrega">Hora de entrega</label>
+          <input id="horaEntrega" type="time">
         </div>
 
         <div class="field">
@@ -470,7 +487,33 @@ let currentUser=null;
 let catalogs=null;
 let currentSubjectOptions=[];
 
+const DELIVERY_SCHEDULES={
+  ebp:[
+    {label:'1ra. — 07:15 a 08:00',time:'07:15'},
+    {label:'2da. — 08:00 a 08:45',time:'08:00'},
+    {label:'3ra. — 09:05 a 09:50',time:'09:05'},
+    {label:'4ta. — 09:50 a 10:30',time:'09:50'},
+    {label:'5ta. — 10:30 a 11:10',time:'10:30'},
+    {label:'6ta. — 11:10 a 11:50',time:'11:10'},
+    {label:'7ma. — 12:30 a 13:10',time:'12:30'},
+    {label:'8va. — 13:10 a 13:50',time:'13:10'},
+    {label:'9na. — 13:50 a 14:30',time:'13:50'}
+  ],
+  emg:[
+    {label:'1ra. — 07:15 a 08:00',time:'07:15'},
+    {label:'2da. — 08:00 a 08:45',time:'08:00'},
+    {label:'3ra. — 08:45 a 09:30',time:'08:45'},
+    {label:'4ta. — 10:00 a 10:40',time:'10:00'},
+    {label:'5ta. — 10:40 a 11:20',time:'10:40'},
+    {label:'6ta. — 11:20 a 12:00',time:'11:20'},
+    {label:'7ma. — 12:00 a 12:40',time:'12:00'},
+    {label:'8va. — 12:40 a 13:20',time:'12:40'},
+    {label:'9na. — 13:45 a 14:30',time:'13:45'}
+  ]
+};
+
 document.addEventListener('DOMContentLoaded',()=>{
+  setDefaultDeliveryDate();
   loadCatalogs();
 
   document.getElementById('userId').addEventListener('keydown',event=>{
@@ -539,6 +582,56 @@ function normalizeText(value){
     .replace(/[\u0300-\u036f]/g,'')
     .trim()
     .toLowerCase();
+}
+
+function normalizeStage(value){
+  const text=String(value||'')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g,'')
+    .replace(/[^a-zA-Z0-9]+/g,'')
+    .toLowerCase();
+
+  if(text.includes('ebp'))return'ebp';
+  if(text.includes('emg'))return'emg';
+  return text;
+}
+
+function setDefaultDeliveryDate(){
+  const dateInput=document.getElementById('fechaEntrega');
+  if(!dateInput)return;
+  const today=new Date();
+  const localDate=new Date(today.getTime()-today.getTimezoneOffset()*60000)
+    .toISOString().split('T')[0];
+  dateInput.value=localDate;
+  dateInput.min=localDate;
+}
+
+function updateDeliverySchedule(){
+  const stage=document.getElementById('etapaDestino').value;
+  const stageKey=normalizeStage(stage);
+  const field=document.getElementById('deliveryBlockField');
+  const select=document.getElementById('bloqueEntrega');
+  const schedule=DELIVERY_SCHEDULES[stageKey]||[];
+
+  select.innerHTML='<option value="">Seleccione un bloque</option>';
+  schedule.forEach(item=>{
+    const option=document.createElement('option');
+    option.value=item.label;
+    option.dataset.time=item.time;
+    option.textContent=item.label;
+    select.appendChild(option);
+  });
+
+  field.classList.toggle('hidden',schedule.length===0);
+  if(!schedule.length)select.value='';
+}
+
+function applySuggestedTime(){
+  const select=document.getElementById('bloqueEntrega');
+  const option=select.options[select.selectedIndex];
+  if(option&&option.dataset.time){
+    document.getElementById('horaEntrega').value=option.dataset.time;
+  }
 }
 
 async function loadCatalogs(){
@@ -630,6 +723,8 @@ function updateRequestType(){
 
 function updateStage(){
   const stage=document.getElementById('etapaDestino').value;
+
+  updateDeliverySchedule();
 
   const permittedDestinations=(currentUser.destinos||[]).filter(destination=>
     (catalogs.reglasDestino||[]).some(rule=>
@@ -944,13 +1039,32 @@ async function submitRequest(){
     return;
   }
 
+  const deliveryDate=document.getElementById('fechaEntrega').value;
+  const deliveryTime=document.getElementById('horaEntrega').value;
+
+  if(!deliveryDate){
+    showMessage('formMessage','Seleccione la fecha de entrega.','error');
+    return;
+  }
+
+  if(!deliveryTime){
+    showMessage('formMessage','Seleccione la hora de entrega.','error');
+    return;
+  }
+
   const payload={
     id:currentUser.id,
     tipoSolicitud:type,
     etapaDestino:stage,
     objetoDestino:destination,
-    observaciones:
-      document.getElementById('observaciones').value.trim(),
+    descripcion:
+      document.getElementById('descripcion').value.trim(),
+    fechaEntrega:
+      document.getElementById('fechaEntrega').value,
+    horaEntrega:
+      document.getElementById('horaEntrega').value,
+    bloqueEntrega:
+      document.getElementById('bloqueEntrega').value,
     comentario:
       document.getElementById('comentario').value.trim()
   };
@@ -1097,7 +1211,11 @@ function resetFormFields(){
   document.getElementById('totalCopias').textContent='0';
   document.getElementById('totalHojasCopias').textContent='0';
   document.getElementById('totalHojas').textContent='0';
+  document.getElementById('horaEntrega').value='';
+  document.getElementById('bloqueEntrega').innerHTML='<option value="">Seleccione un bloque</option>';
+  document.getElementById('deliveryBlockField').classList.add('hidden');
 
+  setDefaultDeliveryDate();
   clearAcademicSelections();
 }
 
