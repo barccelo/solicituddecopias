@@ -77,7 +77,7 @@
 
         <div class="field">
           <label for="objetoDestino">Objeto / Destino</label>
-          <select id="objetoDestino"></select>
+          <select id="objetoDestino" onchange="updateDestinationRule()"></select>
         </div>
 
         <div id="copiesSection" class="hidden">
@@ -254,7 +254,7 @@ async function searchUser(){
     document.getElementById('displayRole').textContent=currentUser.rol||'Sin especificar';
 
     fillSelect('etapaDestino',currentUser.etapas||[]);
-    fillSelect('objetoDestino',currentUser.destinos||[]);
+    fillSelect('objetoDestino',[]);
 
     document.getElementById('loginCard').classList.add('hidden');
     document.getElementById('formCard').classList.remove('hidden');
@@ -271,15 +271,58 @@ function updateRequestType(){
   const type=document.getElementById('tipoSolicitud').value;
   document.getElementById('copiesSection').classList.toggle('hidden',type!=='Copias');
   document.getElementById('reamSection').classList.toggle('hidden',type!=='Resma de hojas');
-  updateStage();
+  updateDestinationRule();
 }
 
 function updateStage(){
+  const stage=document.getElementById('etapaDestino').value;
+
+  const permittedDestinations=(currentUser.destinos||[]).filter(destination=>{
+    return (catalogs.reglasDestino||[]).some(rule=>
+      normalizeText(rule.etapa)===normalizeText(stage) &&
+      normalizeText(rule.destino)===normalizeText(destination)
+    );
+  });
+
+  fillSelect('objetoDestino',permittedDestinations);
+  hideAcademicFields();
+}
+
+function normalizeText(value){
+  return String(value||'')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g,'')
+    .trim()
+    .toLowerCase();
+}
+
+function getCurrentRule(){
+  const stage=document.getElementById('etapaDestino').value;
+  const destination=document.getElementById('objetoDestino').value;
+
+  return (catalogs.reglasDestino||[]).find(rule=>
+    normalizeText(rule.etapa)===normalizeText(stage) &&
+    normalizeText(rule.destino)===normalizeText(destination)
+  )||null;
+}
+
+function hideAcademicFields(){
+  document.getElementById('academicFields').classList.add('hidden');
+  fillSelect('grado',[]);
+  fillSelect('seccion',[]);
+  fillSelect('materia',[]);
+}
+
+function updateDestinationRule(){
   const type=document.getElementById('tipoSolicitud').value;
+  const rule=getCurrentRule();
+
   const showAcademic=
     type==='Copias' &&
     currentUser &&
-    currentUser.usaCamposAcademicos;
+    currentUser.usaCamposAcademicos &&
+    rule &&
+    (rule.usaGrado||rule.usaSeccion||rule.usaMateria);
 
   document.getElementById('academicFields').classList.toggle('hidden',!showAcademic);
 
@@ -340,13 +383,29 @@ async function submitRequest(){
   };
 
   if(type==='Copias'){
-    if(currentUser.usaCamposAcademicos){
+    const rule=getCurrentRule();
+    const needsAcademic=
+      currentUser.usaCamposAcademicos &&
+      rule &&
+      (rule.usaGrado||rule.usaSeccion||rule.usaMateria);
+
+    if(needsAcademic){
       payload.grado=document.getElementById('grado').value;
       payload.seccion=document.getElementById('seccion').value;
       payload.materia=document.getElementById('materia').value;
 
-      if(!payload.grado||!payload.seccion||!payload.materia){
-        showMessage('formMessage','Seleccione grado, sección y materia.','error');
+      if(rule.usaGrado&&!payload.grado){
+        showMessage('formMessage','Seleccione grado o año.','error');
+        return;
+      }
+
+      if(rule.usaSeccion&&!payload.seccion){
+        showMessage('formMessage','Seleccione sección.','error');
+        return;
+      }
+
+      if(rule.usaMateria&&!payload.materia){
+        showMessage('formMessage','Seleccione materia.','error');
         return;
       }
     }
