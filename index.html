@@ -61,32 +61,31 @@
       <div class="user-box">
         <div class="user-row"><strong>ID</strong><span id="displayId"></span></div>
         <div class="user-row"><strong>Nombre</strong><span id="displayName"></span></div>
-        <div class="user-row"><strong>Etapa del usuario</strong><span id="displayStage"></span></div>
         <div class="user-row"><strong>Cargo / Rol</strong><span id="displayRole"></span></div>
       </div>
 
       <form id="requestForm" onsubmit="return false;">
         <div class="field">
           <label for="tipoSolicitud">Tipo de solicitud</label>
-          <select id="tipoSolicitud" onchange="updateRequestType()" required></select>
+          <select id="tipoSolicitud" onchange="updateRequestType()"></select>
         </div>
 
         <div class="field">
           <label for="etapaDestino">Etapa de destino</label>
-          <select id="etapaDestino" onchange="updateDestinationStage()" required></select>
+          <select id="etapaDestino" onchange="updateStage()"></select>
         </div>
 
         <div class="field">
           <label for="objetoDestino">Objeto / Destino</label>
-          <select id="objetoDestino" required></select>
+          <select id="objetoDestino"></select>
         </div>
 
         <div id="copiesSection" class="hidden">
-          <div id="academicFields">
+          <div id="academicFields" class="hidden">
             <div class="grid">
               <div class="field">
                 <label for="grado">Grado / Año</label>
-                <select id="grado" onchange="updateGradeOptions()"></select>
+                <select id="grado" onchange="updateGrade()"></select>
               </div>
               <div class="field">
                 <label for="seccion">Sección</label>
@@ -167,16 +166,6 @@ document.addEventListener('DOMContentLoaded',()=>{
   });
 });
 
-function normalizeStage(value){
-  const text=String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9]+/g,'').toLowerCase();
-  if(text.includes('ebp'))return'ebp';
-  if(text.includes('emg'))return'emg';
-  if(text.includes('direccion'))return'direccion';
-  if(text.includes('laborsocial'))return'laborsocial';
-  if(text.includes('clubdeportivo'))return'clubdeportivo';
-  return text;
-}
-
 function callApi(action,params={}){
   return new Promise((resolve,reject)=>{
     const callbackName='callback_'+Date.now()+'_'+Math.floor(Math.random()*100000);
@@ -200,18 +189,6 @@ function callApi(action,params={}){
   });
 }
 
-function showMessage(id,text,type){
-  const element=document.getElementById(id);
-  element.textContent=text;
-  element.className='message '+type;
-}
-
-function clearMessage(id){
-  const element=document.getElementById(id);
-  element.textContent='';
-  element.className='message';
-}
-
 function fillSelect(id,values,placeholder='Seleccione una opción'){
   const select=document.getElementById(id);
   select.innerHTML='';
@@ -228,6 +205,18 @@ function fillSelect(id,values,placeholder='Seleccione una opción'){
   });
 }
 
+function showMessage(id,text,type){
+  const element=document.getElementById(id);
+  element.textContent=text;
+  element.className='message '+type;
+}
+
+function clearMessage(id){
+  const element=document.getElementById(id);
+  element.textContent='';
+  element.className='message';
+}
+
 async function loadCatalogs(){
   try{
     const response=await callApi('getCatalogs');
@@ -235,8 +224,6 @@ async function loadCatalogs(){
 
     catalogs=response.catalogs||{};
     fillSelect('tipoSolicitud',catalogs.tiposSolicitud||['Copias','Resma de hojas']);
-    fillSelect('etapaDestino',catalogs.etapasDestino||[]);
-    fillSelect('objetoDestino',catalogs.destinos||[]);
     fillSelect('lado',catalogs.lado||['Una sola cara','Ambos lados']);
     fillSelect('corte',catalogs.corte||['No cortada','Cortada'],'Sin especificar');
     fillSelect('grapado',catalogs.grapado||['No grapada','Grapada'],'Sin especificar');
@@ -247,6 +234,7 @@ async function loadCatalogs(){
 
 async function searchUser(){
   clearMessage('loginMessage');
+
   const id=document.getElementById('userId').value.trim();
   const button=document.getElementById('loginButton');
 
@@ -260,10 +248,13 @@ async function searchUser(){
     if(!response.success){showMessage('loginMessage',response.message,'error');return;}
 
     currentUser=response.user;
+
     document.getElementById('displayId').textContent=currentUser.id;
     document.getElementById('displayName').textContent=currentUser.nombre;
-    document.getElementById('displayStage').textContent=currentUser.etapaUsuario||'Sin especificar';
     document.getElementById('displayRole').textContent=currentUser.rol||'Sin especificar';
+
+    fillSelect('etapaDestino',currentUser.etapas||[]);
+    fillSelect('objetoDestino',currentUser.destinos||[]);
 
     document.getElementById('loginCard').classList.add('hidden');
     document.getElementById('formCard').classList.remove('hidden');
@@ -280,38 +271,31 @@ function updateRequestType(){
   const type=document.getElementById('tipoSolicitud').value;
   document.getElementById('copiesSection').classList.toggle('hidden',type!=='Copias');
   document.getElementById('reamSection').classList.toggle('hidden',type!=='Resma de hojas');
-  updateDestinationStage();
-  clearMessage('formMessage');
+  updateStage();
 }
 
-function updateDestinationStage(){
-  const stage=document.getElementById('etapaDestino').value;
-  const stageKey=normalizeStage(stage);
-  const isAcademic=stageKey==='ebp'||stageKey==='emg';
+function updateStage(){
+  const type=document.getElementById('tipoSolicitud').value;
+  const showAcademic=
+    type==='Copias' &&
+    currentUser &&
+    currentUser.usaCamposAcademicos;
 
-  document.getElementById('academicFields').classList.toggle('hidden',!isAcademic);
+  document.getElementById('academicFields').classList.toggle('hidden',!showAcademic);
 
-  if(!isAcademic){
+  if(!showAcademic){
     fillSelect('grado',[]);
     fillSelect('seccion',[]);
     fillSelect('materia',[]);
     return;
   }
 
-  let grades=(catalogs.gradosPorEtapa&&catalogs.gradosPorEtapa[stageKey])||[];
-  const suggested=currentUser&&currentUser.gradosSugeridos?currentUser.gradosSugeridos:[];
-
-  grades=[
-    ...grades.filter(grade=>suggested.includes(grade)),
-    ...grades.filter(grade=>!suggested.includes(grade))
-  ];
-
-  fillSelect('grado',grades);
+  fillSelect('grado',currentUser.grados||[]);
   fillSelect('seccion',[]);
   fillSelect('materia',[]);
 }
 
-function updateGradeOptions(){
+function updateGrade(){
   const grade=document.getElementById('grado').value;
 
   if(!grade){
@@ -321,60 +305,57 @@ function updateGradeOptions(){
   }
 
   const sections=(catalogs.seccionesPorGrado&&catalogs.seccionesPorGrado[grade])||[];
-  const subjects=(catalogs.materiasPorGrado&&catalogs.materiasPorGrado[grade])||[];
+  const gradeSubjects=(catalogs.materiasPorGrado&&catalogs.materiasPorGrado[grade])||[];
+  const subjects=gradeSubjects.filter(subject=>(currentUser.materias||[]).includes(subject));
 
   fillSelect('seccion',sections);
   fillSelect('materia',subjects);
-
-  if(sections.length===1)document.getElementById('seccion').value=sections[0];
-  if(subjects.length===1)document.getElementById('materia').value=subjects[0];
 }
 
 function updateTotal(){
   const originals=Number(document.getElementById('hojasOriginales').value||0);
-  const sets=Number(document.getElementById('numeroJuegos').value||0);
-  document.getElementById('totalCopias').textContent=originals*sets;
+  const games=Number(document.getElementById('numeroJuegos').value||0);
+  document.getElementById('totalCopias').textContent=originals*games;
 }
 
 async function submitRequest(){
   clearMessage('formMessage');
 
-  if(!currentUser){showMessage('formMessage','Debe ingresar con un ID válido.','error');return;}
-
   const type=document.getElementById('tipoSolicitud').value;
-  const destinationStage=document.getElementById('etapaDestino').value;
+  const stage=document.getElementById('etapaDestino').value;
   const destination=document.getElementById('objetoDestino').value;
 
-  if(!type){showMessage('formMessage','Seleccione el tipo de solicitud.','error');return;}
-  if(!destinationStage){showMessage('formMessage','Seleccione la etapa de destino.','error');return;}
-  if(!destination){showMessage('formMessage','Seleccione el objeto o destino.','error');return;}
+  if(!type||!stage||!destination){
+    showMessage('formMessage','Seleccione tipo, etapa y destino.','error');
+    return;
+  }
 
   const payload={
     id:currentUser.id,
     tipoSolicitud:type,
-    etapaDestino:destinationStage,
+    etapaDestino:stage,
     objetoDestino:destination,
     observaciones:document.getElementById('observaciones').value.trim(),
     comentario:document.getElementById('comentario').value.trim()
   };
 
   if(type==='Copias'){
-    const stageKey=normalizeStage(destinationStage);
-    const isAcademic=stageKey==='ebp'||stageKey==='emg';
+    if(currentUser.usaCamposAcademicos){
+      payload.grado=document.getElementById('grado').value;
+      payload.seccion=document.getElementById('seccion').value;
+      payload.materia=document.getElementById('materia').value;
 
-    payload.grado=document.getElementById('grado').value;
-    payload.seccion=document.getElementById('seccion').value;
-    payload.materia=document.getElementById('materia').value;
+      if(!payload.grado||!payload.seccion||!payload.materia){
+        showMessage('formMessage','Seleccione grado, sección y materia.','error');
+        return;
+      }
+    }
+
     payload.hojasOriginales=document.getElementById('hojasOriginales').value;
     payload.numeroJuegos=document.getElementById('numeroJuegos').value;
     payload.lado=document.getElementById('lado').value;
     payload.corte=document.getElementById('corte').value;
     payload.grapado=document.getElementById('grapado').value;
-
-    if(isAcademic&&(!payload.grado||!payload.seccion||!payload.materia)){
-      showMessage('formMessage','Seleccione grado/año, sección y materia.','error');
-      return;
-    }
 
     if(!payload.hojasOriginales||!payload.numeroJuegos||!payload.lado){
       showMessage('formMessage','Complete hojas originales, número de juegos e impresión.','error');
@@ -382,6 +363,7 @@ async function submitRequest(){
     }
   }else{
     payload.cantidadResmas=document.getElementById('cantidadResmas').value;
+
     if(!payload.cantidadResmas){
       showMessage('formMessage','Ingrese la cantidad de resmas.','error');
       return;
@@ -394,7 +376,11 @@ async function submitRequest(){
 
   try{
     const response=await callApi('submitRequest',payload);
-    if(!response.success){showMessage('formMessage',response.message,'error');return;}
+
+    if(!response.success){
+      showMessage('formMessage',response.message,'error');
+      return;
+    }
 
     let message=response.message;
     if(response.totalCopias)message+=' Total: '+response.totalCopias+' copias.';
@@ -413,7 +399,7 @@ function resetFormFields(){
   document.getElementById('requestForm').reset();
   document.getElementById('copiesSection').classList.add('hidden');
   document.getElementById('reamSection').classList.add('hidden');
-  document.getElementById('academicFields').classList.remove('hidden');
+  document.getElementById('academicFields').classList.add('hidden');
   document.getElementById('totalCopias').textContent='0';
   fillSelect('grado',[]);
   fillSelect('seccion',[]);
