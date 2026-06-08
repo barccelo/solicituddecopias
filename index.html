@@ -244,6 +244,16 @@
       font-weight:700;
     }
 
+    .print-options {
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:8px;
+    }
+
+    .print-options .duplex-option {
+      grid-column:1 / -1;
+    }
+
     .totals-grid {
       display:grid;
       grid-template-columns:repeat(2,minmax(0,1fr));
@@ -458,8 +468,8 @@
           <div class="field">
             <label>Opciones de impresión</label>
 
-            <div class="check-list">
-              <label class="check-option">
+            <div class="print-options">
+              <label class="check-option duplex-option">
                 <input id="ambosLados" type="checkbox" onchange="updateTotal()">
                 <span>Imprimir por ambos lados</span>
               </label>
@@ -1106,8 +1116,6 @@ async function submitRequest(){
     tipoSolicitud:type,
     etapaDestino:stage,
     objetoDestino:destination,
-    descripcion:
-      document.getElementById('descripcion').value.trim(),
     fechaEntrega:
       document.getElementById('fechaEntrega').value,
     horaEntrega:
