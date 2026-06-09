@@ -419,18 +419,8 @@
         <div id="sportsField" class="field hidden">
           <label for="disciplinaDeportiva">Disciplina deportiva</label>
           <select id="disciplinaDeportiva">
-            <option value="">Seleccione una disciplina</option>
-            <option value="Ajedrez">Ajedrez</option>
-            <option value="Atletismo">Atletismo</option>
-            <option value="Astronomía">Astronomía</option>
-            <option value="Baloncesto">Baloncesto</option>
-            <option value="Béisbol">Béisbol</option>
-            <option value="Fútbol Campo">Fútbol Campo</option>
-            <option value="Fútbol Sala">Fútbol Sala</option>
-            <option value="Música">Música</option>
-            <option value="Robótica">Robótica</option>
-            <option value="Tenis">Tenis</option>
-          </select>
+                <option value="">Seleccione una disciplina</option>
+              </select>
         </div>
 
         <div id="copiesSection" class="hidden">
@@ -474,16 +464,6 @@
               <label for="disciplinaDeportiva">Disciplina deportiva</label>
               <select id="disciplinaDeportiva">
                 <option value="">Seleccione una disciplina</option>
-                <option value="Ajedrez">Ajedrez</option>
-                <option value="Atletismo">Atletismo</option>
-                <option value="Astronomía">Astronomía</option>
-                <option value="Baloncesto">Baloncesto</option>
-                <option value="Béisbol">Béisbol</option>
-                <option value="Fútbol Campo">Fútbol Campo</option>
-                <option value="Fútbol Sala">Fútbol Sala</option>
-                <option value="Música">Música</option>
-                <option value="Robótica">Robótica</option>
-                <option value="Tenis">Tenis</option>
               </select>
             </div>
           </div>
@@ -759,6 +739,12 @@ async function loadCatalogs(){
     fillSelect(
       'tipoSolicitud',
       catalogs.tiposSolicitud||['Copias','Resma de hojas']
+    );
+
+    fillSelect(
+      'disciplinaDeportiva',
+      catalogs.disciplinasDeportivas||[],
+      'Seleccione una disciplina'
     );
   }catch(error){
     showMessage('loginMessage',error.message,'error');
