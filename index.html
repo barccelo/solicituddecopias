@@ -371,6 +371,19 @@
         <input id="userId" type="text" inputmode="numeric" placeholder="Ejemplo: 1001">
       </div>
 
+      <div class="field">
+        <label for="userPin">PIN</label>
+        <input
+          id="userPin"
+          type="password"
+          inputmode="numeric"
+          maxlength="6"
+          pattern="[0-9]*"
+          placeholder="6 dígitos"
+          autocomplete="current-password"
+        >
+      </div>
+
       <button id="loginButton" class="button" type="button" onclick="searchUser()">
         Ingresar
       </button>
@@ -574,6 +587,7 @@
 const SCRIPT_URL='https://script.google.com/macros/s/AKfycbw41nIIwyDbFgCOL-0-3HflQXGRFjCyVmUXDOWN3O-o-yCm724Aa1zyq3xaXtd21sg/exec';
 
 let currentUser=null;
+let sessionToken='';
 let catalogs=null;
 let currentSubjectOptions=[];
 
@@ -607,6 +621,13 @@ document.addEventListener('DOMContentLoaded',()=>{
   loadCatalogs();
 
   document.getElementById('userId').addEventListener('keydown',event=>{
+    if(event.key==='Enter'){
+      event.preventDefault();
+      document.getElementById('userPin').focus();
+    }
+  });
+
+  document.getElementById('userPin').addEventListener('keydown',event=>{
     if(event.key==='Enter'){
       event.preventDefault();
       searchUser();
@@ -748,39 +769,83 @@ async function searchUser(){
   clearMessage('loginMessage');
 
   const id=document.getElementById('userId').value.trim();
+  const pin=document.getElementById('userPin').value.trim();
   const button=document.getElementById('loginButton');
 
-  if(!id){
-    showMessage('loginMessage','Debe ingresar un ID.','error');
+  if(!id||!pin){
+    showMessage(
+      'loginMessage',
+      'Ingrese el ID y el PIN.',
+      'error'
+    );
+    return;
+  }
+
+  if(!/^\d{6}$/.test(pin)){
+    showMessage(
+      'loginMessage',
+      'El PIN debe tener 6 dígitos.',
+      'error'
+    );
     return;
   }
 
   button.disabled=true;
-  button.textContent='Buscando...';
+  button.textContent='Ingresando...';
 
   try{
-    const response=await callApi('getUser',{id});
+    const response=
+      await callApi('login',{id,pin});
 
     if(!response.success){
-      showMessage('loginMessage',response.message,'error');
+      showMessage(
+        'loginMessage',
+        response.message,
+        'error'
+      );
       return;
     }
 
+    sessionToken=response.token;
     currentUser=response.user;
 
-    document.getElementById('displayId').textContent=currentUser.id;
-    document.getElementById('displayName').textContent=currentUser.nombre;
-    document.getElementById('displayRole').textContent=currentUser.rol||'Sin especificar';
+    document.getElementById('userPin').value='';
 
-    fillSelect('etapaDestino',currentUser.etapas||[]);
+    document.getElementById('displayId').textContent=
+      currentUser.id;
+
+    document.getElementById('displayName').textContent=
+      currentUser.nombre;
+
+    document.getElementById('displayRole').textContent=
+      currentUser.rol||'Sin especificar';
+
+    fillSelect(
+      'etapaDestino',
+      currentUser.etapas||[]
+    );
+
     fillSelect('objetoDestino',[]);
 
-    document.getElementById('loginCard').classList.add('hidden');
-    document.getElementById('formCard').classList.remove('hidden');
+    document
+      .getElementById('loginCard')
+      .classList.add('hidden');
 
-    window.scrollTo({top:0,behavior:'smooth'});
+    document
+      .getElementById('formCard')
+      .classList.remove('hidden');
+
+    window.scrollTo({
+      top:0,
+      behavior:'smooth'
+    });
+
   }catch(error){
-    showMessage('loginMessage',error.message,'error');
+    showMessage(
+      'loginMessage',
+      error.message,
+      'error'
+    );
   }finally{
     button.disabled=false;
     button.textContent='Ingresar';
@@ -1220,6 +1285,7 @@ async function submitRequest(){
 
   const payload={
     id:currentUser.id,
+    token:sessionToken,
     tipoSolicitud:type,
     etapaDestino:stage,
     objetoDestino:destination,
@@ -1387,10 +1453,14 @@ function resetFormFields(){
   clearAcademicSelections();
 }
 
-function resetApp(){
+async function resetApp(closeRemoteSession=true){
+  const tokenToClose=sessionToken;
+
   currentUser=null;
+  sessionToken='';
 
   document.getElementById('userId').value='';
+  document.getElementById('userPin').value='';
 
   resetFormFields();
   clearMessage('loginMessage');
@@ -1405,6 +1475,20 @@ function resetApp(){
     .classList.remove('hidden');
 
   window.scrollTo({top:0,behavior:'smooth'});
+
+  if(closeRemoteSession&&tokenToClose){
+    try{
+      await callApi(
+        'logout',
+        {token:tokenToClose}
+      );
+    }catch(error){
+      console.warn(
+        'No se pudo cerrar la sesión remota.',
+        error
+      );
+    }
+  }
 }
 </script>
 </body>
