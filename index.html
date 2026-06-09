@@ -833,12 +833,37 @@ function updateStage(){
   updateSportsField();
   updateDeliverySchedule();
 
-  const permittedDestinations=(currentUser.destinos||[]).filter(destination=>
-    (catalogs.reglasDestino||[]).some(rule=>
-      normalizeText(rule.etapa)===normalizeText(stage) &&
-      normalizeText(rule.destino)===normalizeText(destination)
+  const stageKey=normalizeStage(stage);
+
+  const stageSpecificDestinations=
+    (
+      currentUser.destinosPorEtapa &&
+      currentUser.destinosPorEtapa[stageKey]
+    ) || [];
+
+  const allStageDestinations=
+    (
+      currentUser.destinosPorEtapa &&
+      (
+        currentUser.destinosPorEtapa.todas ||
+        currentUser.destinosPorEtapa.todos ||
+        currentUser.destinosPorEtapa.general
+      )
+    ) || [];
+
+  const stageDestinations=[
+    ...new Set(
+      stageSpecificDestinations.concat(allStageDestinations)
     )
-  );
+  ];
+
+  const permittedDestinations=
+    stageDestinations.filter(destination=>
+      (catalogs.reglasDestino||[]).some(rule=>
+        normalizeText(rule.etapa)===normalizeText(stage) &&
+        normalizeText(rule.destino)===normalizeText(destination)
+      )
+    );
 
   fillSelect('objetoDestino',permittedDestinations);
   document.getElementById('academicFields').classList.add('hidden');
