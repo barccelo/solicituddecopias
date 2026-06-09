@@ -456,6 +456,23 @@
                 ></div>
               </div>
             </div>
+
+            <div id="sportsField" class="field hidden">
+              <label for="disciplinaDeportiva">Disciplina deportiva</label>
+              <select id="disciplinaDeportiva">
+                <option value="">Seleccione una disciplina</option>
+                <option value="Ajedrez">Ajedrez</option>
+                <option value="Atletismo">Atletismo</option>
+                <option value="Astronomía">Astronomía</option>
+                <option value="Baloncesto">Baloncesto</option>
+                <option value="Béisbol">Béisbol</option>
+                <option value="Fútbol Campo">Fútbol Campo</option>
+                <option value="Fútbol Sala">Fútbol Sala</option>
+                <option value="Música">Música</option>
+                <option value="Robótica">Robótica</option>
+                <option value="Tenis">Tenis</option>
+              </select>
+            </div>
           </div>
 
           <div class="grid">
@@ -824,12 +841,18 @@ function updateStage(){
   );
 
   fillSelect('objetoDestino',permittedDestinations);
+  document.getElementById('academicFields').classList.add('hidden');
+  document.getElementById('sportsField').classList.add('hidden');
   clearAcademicSelections();
 }
 
 function updateDestinationRule(){
   const type=document.getElementById('tipoSolicitud').value;
   const rule=getCurrentRule();
+  const stage=document.getElementById('etapaDestino').value;
+
+  const showSports=
+    normalizeStage(stage)==='clubdeportivo';
 
   const showAcademic=
     type==='Copias' &&
@@ -838,9 +861,28 @@ function updateDestinationRule(){
     rule &&
     (rule.usaGrado||rule.usaSeccion||rule.usaMateria);
 
+  const showSharedArea=
+    showAcademic||showSports;
+
   document
     .getElementById('academicFields')
-    .classList.toggle('hidden',!showAcademic);
+    .classList.toggle('hidden',!showSharedArea);
+
+  document
+    .getElementById('sportsField')
+    .classList.toggle('hidden',!showSports);
+
+  if(showSports){
+    document.getElementById('gradeField').classList.add('hidden');
+    document.getElementById('sectionField').classList.add('hidden');
+    document.getElementById('subjectField').classList.add('hidden');
+
+    document.getElementById('gradeOptions').innerHTML='';
+    document.getElementById('sectionOptions').innerHTML='';
+    currentSubjectOptions=[];
+    resetSubjectControl();
+    return;
+  }
 
   if(!showAcademic){
     clearAcademicSelections();
@@ -859,12 +901,17 @@ function updateDestinationRule(){
     .getElementById('subjectField')
     .classList.toggle('hidden',!rule.usaMateria);
 
-  renderGradeOptions(currentUser.grados||[]);
+  const stageKey=normalizeStage(stage);
+
+  const gradesForStage=
+    (currentUser.gradosPorEtapa &&
+      currentUser.gradosPorEtapa[stageKey]) || [];
+
+  renderGradeOptions(gradesForStage);
   renderSectionOptions([]);
   currentSubjectOptions=[];
   resetSubjectControl();
 }
-
 function renderCheckboxGroup(containerId,values,allLabel,onChange){
   const container=document.getElementById(containerId);
   container.innerHTML='';
@@ -1065,6 +1112,10 @@ function clearAcademicSelections(){
   document.getElementById('gradeField').classList.add('hidden');
   document.getElementById('sectionField').classList.add('hidden');
   document.getElementById('subjectField').classList.add('hidden');
+
+  if(normalizeStage(document.getElementById('etapaDestino').value)!=='clubdeportivo'){
+    document.getElementById('sportsField').classList.add('hidden');
+  }
 
   document.getElementById('gradeOptions').innerHTML='';
   document.getElementById('sectionOptions').innerHTML='';
