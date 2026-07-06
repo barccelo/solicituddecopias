@@ -3,56 +3,38 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Administración · Solicitudes</title>
+  <title>Panel administrativo · Solicitudes</title>
   <style>
-    :root {
-      --primary:#8b0000;
-      --bg:#f3f4f6;
-      --card:#fff;
-      --text:#202124;
-      --muted:#676b72;
-      --border:#dfe2e7;
-      --success:#176b3a;
-      --error:#a61b2b;
-    }
+    :root{--red:#8b0000;--bg:#f3f4f6;--card:#fff;--border:#d8dce2;--text:#202124;--muted:#68707a}
     *{box-sizing:border-box}
     body{margin:0;background:var(--bg);font-family:Arial,sans-serif;color:var(--text)}
-    header{background:var(--primary);color:#fff;padding:22px 16px;text-align:center}
-    header h1{margin:0;font-size:23px}
-    .container{max-width:1100px;margin:0 auto;padding:16px}
-    .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;margin-bottom:16px;box-shadow:0 4px 16px rgba(0,0,0,.06)}
+    header{background:var(--red);color:#fff;text-align:center;padding:18px 14px}
+    header h1{margin:0;font-size:22px}
+    main{max-width:1120px;margin:0 auto;padding:14px}
+    .card{background:#fff;border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:0 3px 14px rgba(0,0,0,.06)}
     .hidden{display:none!important}
-    .grid{display:grid;grid-template-columns:1fr;gap:12px}
     .grid-2{display:grid;grid-template-columns:1fr;gap:12px}
-    .toolbar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
-    .tabs{display:flex;gap:8px;overflow:auto;margin-bottom:16px}
-    .tab{border:1px solid var(--border);background:#fff;border-radius:10px;padding:10px 14px;white-space:nowrap;cursor:pointer}
-    .tab.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+    .grid-3{display:grid;grid-template-columns:1fr;gap:12px}
     label{display:block;font-weight:700;font-size:14px;margin-bottom:6px}
-    input,select,textarea{width:100%;min-height:46px;border:1px solid var(--border);border-radius:10px;padding:10px 12px;font:inherit;background:#fff}
-    textarea{min-height:110px;resize:vertical}
-    button{border:0;border-radius:10px;padding:11px 14px;font-weight:700;cursor:pointer;background:var(--primary);color:#fff}
-    button.secondary{background:#474b52}
+    input,select,textarea{width:100%;min-height:44px;border:1px solid var(--border);border-radius:10px;padding:10px 12px;font:inherit;background:#fff}
+    textarea{min-height:82px;resize:vertical}
+    button{border:0;border-radius:10px;background:var(--red);color:#fff;font-weight:700;padding:10px 13px;cursor:pointer}
+    button.secondary{background:#4b5563}
     button.light{background:#eceef1;color:#202124}
-    button.danger{background:#a61b2b}
-    button:disabled{opacity:.6;cursor:wait}
-    .message{display:none;padding:11px;border-radius:10px;margin-top:12px}
-    .message.success{display:block;background:#e9f6ee;color:var(--success)}
-    .message.error{display:block;background:#fdecef;color:var(--error)}
-    .table-wrap{overflow:auto}
-    table{width:100%;border-collapse:collapse;min-width:760px}
-    th,td{padding:10px;border-bottom:1px solid var(--border);text-align:left;font-size:14px}
+    button:disabled{opacity:.65;cursor:wait}
+    .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+    .tabs{display:flex;gap:8px;overflow:auto;margin-bottom:14px}
+    .tab{background:#fff;color:#202124;border:1px solid var(--border)}
+    .tab.active{background:var(--red);color:#fff;border-color:var(--red)}
+    table{border-collapse:collapse;width:100%;min-width:760px}
+    th,td{border-bottom:1px solid var(--border);padding:9px;text-align:left;font-size:14px;vertical-align:top}
     th{background:#f7f8fa}
-    .badge{display:inline-block;padding:4px 8px;border-radius:999px;background:#eceef1;font-size:12px}
-    .status-row{display:flex;gap:8px;align-items:center}
-    .status-row select{min-width:135px}
-    .small{font-size:12px;color:var(--muted)}
-    h2{margin:0 0 14px;color:var(--primary);font-size:20px}
-    h3{margin:16px 0 8px;font-size:16px}
-    @media(min-width:760px){
-      .grid-2{grid-template-columns:1fr 1fr}
-      .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-    }
+    .table-wrap{overflow:auto}
+    .message{display:none;padding:11px;border-radius:10px;margin-top:12px}
+    .message.ok{display:block;background:#e7f5ed;color:#166534}
+    .message.err{display:block;background:#fdecef;color:#991b1b}
+    .muted{color:var(--muted);font-size:13px}
+    @media(min-width:760px){.grid-2{grid-template-columns:1fr 1fr}.grid-3{grid-template-columns:repeat(3,1fr)}}
   </style>
 </head>
 <body>
@@ -60,130 +42,121 @@
   <h1>Panel administrativo</h1>
 </header>
 
-<main class="container">
+<main>
   <section id="loginCard" class="card">
     <h2>Acceso</h2>
     <div class="grid-2">
       <div>
-        <label for="adminId">ID</label>
-        <input id="adminId" inputmode="numeric">
+        <label>ID</label>
+        <input id="loginId" inputmode="numeric">
       </div>
       <div>
-        <label for="adminPin">PIN</label>
-        <input id="adminPin" type="password" inputmode="numeric" maxlength="6">
+        <label>PIN</label>
+        <input id="loginPin" type="password" inputmode="numeric" maxlength="6">
       </div>
     </div>
-    <button id="loginButton" style="margin-top:12px" onclick="loginAdmin()">Ingresar</button>
+    <button id="loginButton" style="margin-top:12px" onclick="login()">Ingresar</button>
     <div id="loginMessage" class="message"></div>
   </section>
 
   <section id="panel" class="hidden">
     <div class="toolbar">
-      <button class="secondary" onclick="loadAdminData()">Actualizar datos</button>
-      <button class="light" onclick="clearCache()">Limpiar caché</button>
-      <button class="danger" onclick="logoutAdmin()">Cerrar sesión</button>
+      <button onclick="loadData()">Actualizar</button>
+      <button class="secondary" onclick="clearCache()">Limpiar caché</button>
+      <button class="light" onclick="logout()">Salir</button>
     </div>
 
     <div class="tabs">
       <button class="tab active" data-tab="users" onclick="showTab('users')">Usuarios</button>
-      <button class="tab" data-tab="disciplines" onclick="showTab('disciplines')">Disciplinas</button>
-      <button class="tab" data-tab="requests" onclick="showTab('requests')">Solicitudes</button>
+      <button class="tab" data-tab="permissions" onclick="showTab('permissions')">Permisos</button>
+      <button class="tab" data-tab="catalogs" onclick="showTab('catalogs')">Catálogos</button>
+      <button class="tab" data-tab="reports" onclick="showTab('reports')">Reportes</button>
     </div>
 
     <section id="tab-users" class="card">
       <h2>Usuarios</h2>
-      <div class="grid-2">
-        <div>
-          <label for="userSearch">Buscar usuario</label>
-          <input id="userSearch" type="search" oninput="renderUsers()" placeholder="ID, nombre o cargo">
-        </div>
-        <div style="display:flex;align-items:end">
-          <button onclick="newUser()">Nuevo usuario</button>
-        </div>
+      <div class="grid-3">
+        <div><label>ID</label><input id="uId" placeholder="Vacío = próximo ID"></div>
+        <div><label>Nombre</label><input id="uName"></div>
+        <div><label>Cargo / Rol</label><input id="uRole"></div>
+        <div><label>Observaciones</label><input id="uObs"></div>
+        <label><input id="uActive" type="checkbox" checked style="width:auto;min-height:auto"> Activo</label>
+        <label><input id="uAcademic" type="checkbox" style="width:auto;min-height:auto"> Usa campos académicos</label>
+        <label><input id="uAdmin" type="checkbox" style="width:auto;min-height:auto"> Es administrador</label>
       </div>
-
+      <div class="toolbar" style="margin-top:12px">
+        <button onclick="saveUser()">Guardar usuario</button>
+        <button class="light" onclick="setPin()">Cambiar PIN</button>
+        <button class="light" onclick="unlockUser()">Desbloquear</button>
+      </div>
+      <div id="userMessage" class="message"></div>
       <div class="table-wrap" style="margin-top:14px">
         <table>
-          <thead>
-            <tr><th>ID</th><th>Nombre</th><th>Cargo</th><th>Estado</th><th></th></tr>
-          </thead>
+          <thead><tr><th>ID</th><th>Nombre</th><th>Cargo</th><th>Activo</th><th>Admin</th><th>PIN</th><th></th></tr></thead>
           <tbody id="usersTable"></tbody>
         </table>
       </div>
-
-      <div id="userEditor" class="hidden" style="margin-top:20px">
-        <h3>Editar usuario</h3>
-        <div class="grid-3">
-          <div><label>ID</label><input id="editId" readonly></div>
-          <div><label>Nombre</label><input id="editName"></div>
-          <div><label>Cargo / Rol</label><input id="editRole"></div>
-        </div>
-
-        <div class="grid-3" style="margin-top:12px">
-          <label><input id="editActive" type="checkbox" style="width:auto;min-height:auto"> Activo</label>
-          <label><input id="editAcademic" type="checkbox" style="width:auto;min-height:auto"> Usa campos académicos</label>
-          <label><input id="editAdmin" type="checkbox" style="width:auto;min-height:auto"> Es administrador</label>
-        </div>
-
-        <div class="grid-2" style="margin-top:12px">
-          <div>
-            <label>Etapas permitidas</label>
-            <textarea id="editStages" placeholder="Una por línea"></textarea>
-          </div>
-          <div>
-            <label>Materias permitidas</label>
-            <textarea id="editSubjects" placeholder="Una por línea"></textarea>
-          </div>
-          <div>
-            <label>Destinos por etapa</label>
-            <textarea id="editDestinations" placeholder="Etapa | Destino&#10;E. B. P. | Exámenes"></textarea>
-          </div>
-          <div>
-            <label>Grados por etapa</label>
-            <textarea id="editGrades" placeholder="Etapa | Grado / Año"></textarea>
-          </div>
-        </div>
-
-        <div class="toolbar" style="margin-top:12px">
-          <button onclick="saveUser()">Guardar usuario</button>
-          <button class="secondary" onclick="promptPin()">Cambiar PIN</button>
-          <button class="light" onclick="unlockUser()">Desbloquear</button>
-          <button class="light" onclick="closeEditor()">Cerrar</button>
-        </div>
-        <div id="userMessage" class="message"></div>
-      </div>
     </section>
 
-    <section id="tab-disciplines" class="card hidden">
-      <h2>Disciplinas deportivas</h2>
-      <div class="grid-2">
-        <div><label>Nombre</label><input id="disciplineName"></div>
-        <div style="display:flex;align-items:end;gap:8px">
-          <label style="margin:0"><input id="disciplineActive" type="checkbox" checked style="width:auto;min-height:auto"> Activa</label>
-          <button onclick="saveDiscipline()">Guardar</button>
-        </div>
+    <section id="tab-permissions" class="card hidden">
+      <h2>Permisos</h2>
+      <div class="grid-3">
+        <div><label>ID</label><input id="pId"></div>
+        <div><label>Nombre</label><input id="pName"></div>
+        <div><label>Ámbito</label><select id="pAmbito"></select></div>
+        <div><label>Grado / Año</label><input id="pGrado" placeholder="Opcional"></div>
+        <div><label>Sección</label><input id="pSeccion" placeholder="Opcional"></div>
+        <div><label>Materia</label><input id="pMateria" placeholder="Opcional"></div>
+        <div><label>Objeto / Destino</label><input id="pObjeto" placeholder="Opcional"></div>
+        <div><label>Disciplina deportiva</label><input id="pDisciplina" placeholder="Opcional"></div>
+        <div><label>Origen</label><input id="pOrigen" value="Manual"></div>
+        <label><input id="pActive" type="checkbox" checked style="width:auto;min-height:auto"> Activo</label>
       </div>
-      <input id="disciplineOldName" type="hidden">
+      <button style="margin-top:12px" onclick="savePermission()">Agregar permiso</button>
+      <div id="permissionMessage" class="message"></div>
       <div class="table-wrap" style="margin-top:14px">
         <table>
-          <thead><tr><th>Disciplina</th><th>Estado</th><th></th></tr></thead>
-          <tbody id="disciplinesTable"></tbody>
+          <thead><tr><th>ID</th><th>Nombre</th><th>Ámbito</th><th>Grado</th><th>Sección</th><th>Materia</th><th>Objeto</th><th>Disciplina</th><th>Activo</th></tr></thead>
+          <tbody id="permissionsTable"></tbody>
         </table>
       </div>
-      <div id="disciplineMessage" class="message"></div>
     </section>
 
-    <section id="tab-requests" class="card hidden">
-      <h2>Solicitudes recientes</h2>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr><th>Fecha</th><th>Usuario</th><th>Tipo</th><th>Etapa</th><th>Destino</th><th>Estado</th></tr>
-          </thead>
-          <tbody id="requestsTable"></tbody>
-        </table>
+    <section id="tab-catalogs" class="card hidden">
+      <h2>Catálogos</h2>
+      <h3>Objeto / Destino</h3>
+      <div class="grid-3">
+        <div><label>Ámbito</label><select id="oAmbito"></select></div>
+        <div><label>Objeto / Destino</label><input id="oObjeto"></div>
+        <label><input id="oGrade" type="checkbox" style="width:auto;min-height:auto"> Usa grado</label>
+        <label><input id="oSection" type="checkbox" style="width:auto;min-height:auto"> Usa sección</label>
+        <label><input id="oSubject" type="checkbox" style="width:auto;min-height:auto"> Usa materia</label>
+        <label><input id="oReport" type="checkbox" checked style="width:auto;min-height:auto"> Sale en reporte</label>
+        <label><input id="oActive" type="checkbox" checked style="width:auto;min-height:auto"> Activo</label>
       </div>
-      <div id="requestMessage" class="message"></div>
+      <button style="margin-top:12px" onclick="saveObject()">Guardar objeto</button>
+
+      <h3>Disciplina deportiva</h3>
+      <div class="grid-2">
+        <div><label>Disciplina</label><input id="dName"></div>
+        <label><input id="dActive" type="checkbox" checked style="width:auto;min-height:auto"> Activa</label>
+      </div>
+      <button style="margin-top:12px" onclick="saveDiscipline()">Guardar disciplina</button>
+      <div id="catalogMessage" class="message"></div>
+    </section>
+
+    <section id="tab-reports" class="card hidden">
+      <h2>Reportes por fecha</h2>
+      <div class="grid-3">
+        <div><label>Ámbito</label><select id="rAmbito"></select></div>
+        <div><label>Desde</label><input id="rDesde" type="date"></div>
+        <div><label>Hasta</label><input id="rHasta" type="date"></div>
+      </div>
+      <div class="toolbar" style="margin-top:12px">
+        <button onclick="generateReport()">Generar en Google Sheets</button>
+        <button class="secondary" onclick="downloadCsv()">Descargar CSV último reporte</button>
+      </div>
+      <div id="reportMessage" class="message"></div>
     </section>
   </section>
 </main>
@@ -191,7 +164,9 @@
 <script>
 const SCRIPT_URL='https://script.google.com/macros/s/AKfycbw41nIIwyDbFgCOL-0-3HflQXGRFjCyVmUXDOWN3O-o-yCm724Aa1zyq3xaXtd21sg/exec';
 let token='';
-let adminData={users:[],disciplinas:[],solicitudes:[],estados:[]};
+let adminData=null;
+let lastCsv='';
+let lastCsvName='reporte.csv';
 
 function callApi(action,params={}){
   return new Promise((resolve,reject)=>{
@@ -213,239 +188,222 @@ function callApi(action,params={}){
   });
 }
 
-function showMessage(id,text,type){
-  const element=document.getElementById(id);
-  element.textContent=text;
-  element.className='message '+type;
+function msg(id,text,type){
+  const el=document.getElementById(id);
+  el.textContent=text;
+  el.className='message '+type;
 }
 
-async function loginAdmin(){
-  const id=document.getElementById('adminId').value.trim();
-  const pin=document.getElementById('adminPin').value.trim();
-  const button=document.getElementById('loginButton');
+function fillSelect(id, values){
+  const select=document.getElementById(id);
+  select.innerHTML='<option value="">Seleccione</option>';
+  [...new Set((values||[]).filter(Boolean))].forEach(value=>{
+    const option=document.createElement('option');
+    option.value=value;
+    option.textContent=value;
+    select.appendChild(option);
+  });
+}
 
-  if(!id||!/^[0-9]{6}$/.test(pin)){
-    showMessage('loginMessage','Ingrese ID y PIN de 6 dígitos.','error');
+async function login(){
+  const id=document.getElementById('loginId').value.trim();
+  const pin=document.getElementById('loginPin').value.trim();
+
+  const response=await callApi('login',{id,pin});
+
+  if(!response.success){
+    msg('loginMessage',response.message,'err');
     return;
   }
 
-  button.disabled=true;
-  try{
-    const response=await callApi('login',{id,pin});
-    if(!response.success){
-      showMessage('loginMessage',response.message,'error');
-      return;
-    }
-    if(!response.user.esAdministrador){
-      showMessage('loginMessage','Este usuario no es administrador.','error');
-      return;
-    }
-    token=response.token;
-    document.getElementById('loginCard').classList.add('hidden');
-    document.getElementById('panel').classList.remove('hidden');
-    await loadAdminData();
-  }catch(error){
-    showMessage('loginMessage',error.message,'error');
-  }finally{
-    button.disabled=false;
+  if(!response.user.esAdministrador){
+    msg('loginMessage','Este usuario no es administrador.','err');
+    return;
   }
+
+  token=response.token;
+  document.getElementById('loginCard').classList.add('hidden');
+  document.getElementById('panel').classList.remove('hidden');
+  await loadData();
 }
 
-async function loadAdminData(){
+async function loadData(){
   const response=await callApi('adminGetData',{token});
+
   if(!response.success){
     alert(response.message);
     return;
   }
+
   adminData=response;
+  const ambitos=(response.ambitos||[]).map(item=>item['Ámbito']);
+
+  ['pAmbito','oAmbito','rAmbito'].forEach(id=>fillSelect(id,ambitos));
   renderUsers();
-  renderDisciplines();
-  renderRequests();
+  renderPermissions();
 }
 
 function showTab(name){
-  document.querySelectorAll('.tab').forEach(button=>{
-    button.classList.toggle('active',button.dataset.tab===name);
-  });
-  ['users','disciplines','requests'].forEach(tab=>{
+  document.querySelectorAll('.tab').forEach(btn=>btn.classList.toggle('active',btn.dataset.tab===name));
+  ['users','permissions','catalogs','reports'].forEach(tab=>{
     document.getElementById('tab-'+tab).classList.toggle('hidden',tab!==name);
   });
 }
 
 function renderUsers(){
-  const query=document.getElementById('userSearch').value.toLowerCase();
   const body=document.getElementById('usersTable');
   body.innerHTML='';
-  adminData.users
-    .filter(user=>
-      [user.id,user.nombre,user.rol].join(' ').toLowerCase().includes(query)
-    )
-    .forEach(user=>{
-      const row=document.createElement('tr');
-      row.innerHTML=`
-        <td>${user.id}</td>
-        <td>${escapeHtml(user.nombre)}</td>
-        <td>${escapeHtml(user.rol)}</td>
-        <td><span class="badge">${user.activo?'Activo':'Inactivo'}</span></td>
-        <td><button class="light" onclick="editUser('${user.id}')">Editar</button></td>
-      `;
-      body.appendChild(row);
-    });
-}
-
-function newUser(){
-  document.getElementById('userEditor').classList.remove('hidden');
-  document.getElementById('editId').value=adminData.nextUserId||'';
-  document.getElementById('editName').value='';
-  document.getElementById('editRole').value='';
-  document.getElementById('editActive').checked=true;
-  document.getElementById('editAcademic').checked=false;
-  document.getElementById('editAdmin').checked=false;
-  document.getElementById('editStages').value='';
-  document.getElementById('editSubjects').value='';
-  document.getElementById('editDestinations').value='';
-  document.getElementById('editGrades').value='';
-}
-
-function editUser(id){
-  const user=adminData.users.find(item=>item.id===id);
-  if(!user)return;
-  document.getElementById('userEditor').classList.remove('hidden');
-  document.getElementById('editId').value=user.id;
-  document.getElementById('editName').value=user.nombre;
-  document.getElementById('editRole').value=user.rol;
-  document.getElementById('editActive').checked=user.activo;
-  document.getElementById('editAcademic').checked=user.usaCamposAcademicos;
-  document.getElementById('editAdmin').checked=user.esAdministrador;
-  document.getElementById('editStages').value=(user.etapas||[]).join('\n');
-  document.getElementById('editSubjects').value=(user.materias||[]).join('\n');
-  document.getElementById('editDestinations').value=objectPairs(user.destinosPorEtapa,'destino');
-  document.getElementById('editGrades').value=objectPairs(user.gradosPorEtapa,'grado');
-  window.scrollTo({top:document.getElementById('userEditor').offsetTop-20,behavior:'smooth'});
-}
-
-function objectPairs(object){
-  const lines=[];
-  Object.keys(object||{}).forEach(stage=>{
-    (object[stage]||[]).forEach(value=>lines.push(stage+' | '+value));
-  });
-  return lines.join('\n');
-}
-
-function parseLines(id){
-  return document.getElementById(id).value
-    .split('\n').map(value=>value.trim()).filter(Boolean);
-}
-
-function parsePairs(id,valueName){
-  return parseLines(id).map(line=>{
-    const parts=line.split('|').map(value=>value.trim());
-    return {etapa:parts[0]||'', [valueName]:parts.slice(1).join('|').trim()};
-  }).filter(item=>item.etapa&&item[valueName]);
-}
-
-async function saveUser(){
-  const payload={
-    token,
-    userId:document.getElementById('editId').value,
-    nombre:document.getElementById('editName').value.trim(),
-    rol:document.getElementById('editRole').value.trim(),
-    activo:document.getElementById('editActive').checked,
-    usaCamposAcademicos:document.getElementById('editAcademic').checked,
-    esAdministrador:document.getElementById('editAdmin').checked,
-    etapas:JSON.stringify(parseLines('editStages')),
-    materias:JSON.stringify(parseLines('editSubjects')),
-    destinos:JSON.stringify(parsePairs('editDestinations','destino')),
-    grados:JSON.stringify(parsePairs('editGrades','grado'))
-  };
-  const response=await callApi('adminSaveUser',payload);
-  showMessage('userMessage',response.message,response.success?'success':'error');
-  if(response.success)await loadAdminData();
-}
-
-async function promptPin(){
-  const id=document.getElementById('editId').value;
-  const pin=prompt('Ingrese el nuevo PIN de 6 dígitos:');
-  if(pin===null)return;
-  const response=await callApi('adminSetPin',{token,userId:id,pin});
-  showMessage('userMessage',response.message,response.success?'success':'error');
-}
-
-async function unlockUser(){
-  const id=document.getElementById('editId').value;
-  const response=await callApi('adminUnlockUser',{token,userId:id});
-  showMessage('userMessage',response.message,response.success?'success':'error');
-}
-
-function closeEditor(){
-  document.getElementById('userEditor').classList.add('hidden');
-}
-
-function renderDisciplines(){
-  const body=document.getElementById('disciplinesTable');
-  body.innerHTML='';
-  adminData.disciplinas.forEach(item=>{
+  (adminData.usuarios||[]).forEach(user=>{
     const row=document.createElement('tr');
     row.innerHTML=`
-      <td>${escapeHtml(item.nombre)}</td>
-      <td>${item.activo?'Activa':'Inactiva'}</td>
-      <td><button class="light" onclick="editDiscipline('${encodeURIComponent(item.nombre)}',${item.activo})">Editar</button></td>
+      <td>${escapeHtml(user.ID)}</td>
+      <td>${escapeHtml(user.Nombre)}</td>
+      <td>${escapeHtml(user['Cargo / Rol'])}</td>
+      <td>${escapeHtml(user.Activo)}</td>
+      <td>${escapeHtml(user['Es administrador'])}</td>
+      <td>${user['PIN Hash']?'Sí':'No'}</td>
+      <td><button class="light" onclick="editUser('${escapeAttr(user.ID)}')">Editar</button></td>
     `;
     body.appendChild(row);
   });
 }
 
-function editDiscipline(encodedName,active){
-  const name=decodeURIComponent(encodedName);
-  document.getElementById('disciplineOldName').value=name;
-  document.getElementById('disciplineName').value=name;
-  document.getElementById('disciplineActive').checked=active;
+function editUser(id){
+  const user=(adminData.usuarios||[]).find(item=>String(item.ID)===String(id));
+  if(!user)return;
+  document.getElementById('uId').value=user.ID||'';
+  document.getElementById('uName').value=user.Nombre||'';
+  document.getElementById('uRole').value=user['Cargo / Rol']||'';
+  document.getElementById('uObs').value=user.Observaciones||'';
+  document.getElementById('uActive').checked=yes(user.Activo);
+  document.getElementById('uAcademic').checked=yes(user['Usa campos académicos']);
+  document.getElementById('uAdmin').checked=yes(user['Es administrador']);
+  document.getElementById('pId').value=user.ID||'';
+  document.getElementById('pName').value=user.Nombre||'';
+}
+
+async function saveUser(){
+  const response=await callApi('adminSaveUser',{
+    token,
+    id:document.getElementById('uId').value,
+    nombre:document.getElementById('uName').value,
+    rol:document.getElementById('uRole').value,
+    observaciones:document.getElementById('uObs').value,
+    activo:document.getElementById('uActive').checked,
+    usaCamposAcademicos:document.getElementById('uAcademic').checked,
+    esAdministrador:document.getElementById('uAdmin').checked
+  });
+  msg('userMessage',response.message,response.success?'ok':'err');
+  if(response.success)await loadData();
+}
+
+async function setPin(){
+  const id=document.getElementById('uId').value.trim();
+  const pin=prompt('Nuevo PIN de 6 dígitos para '+id+':');
+  if(pin===null)return;
+  const response=await callApi('adminSetPin',{token,id,pin});
+  msg('userMessage',response.message,response.success?'ok':'err');
+  if(response.success)await loadData();
+}
+
+async function unlockUser(){
+  const id=document.getElementById('uId').value.trim();
+  const response=await callApi('adminUnlockUser',{token,id});
+  msg('userMessage',response.message,response.success?'ok':'err');
+}
+
+function renderPermissions(){
+  const body=document.getElementById('permissionsTable');
+  body.innerHTML='';
+  (adminData.permisos||[]).slice(-250).reverse().forEach(p=>{
+    const row=document.createElement('tr');
+    row.innerHTML=`
+      <td>${escapeHtml(p.ID)}</td>
+      <td>${escapeHtml(p.Nombre)}</td>
+      <td>${escapeHtml(p['Ámbito'])}</td>
+      <td>${escapeHtml(p['Grado / Año'])}</td>
+      <td>${escapeHtml(p['Sección'])}</td>
+      <td>${escapeHtml(p.Materia)}</td>
+      <td>${escapeHtml(p['Objeto / Destino'])}</td>
+      <td>${escapeHtml(p['Disciplina deportiva'])}</td>
+      <td>${escapeHtml(p.Activo)}</td>
+    `;
+    body.appendChild(row);
+  });
+}
+
+async function savePermission(){
+  const response=await callApi('adminSavePermission',{
+    token,
+    id:document.getElementById('pId').value,
+    nombre:document.getElementById('pName').value,
+    ambito:document.getElementById('pAmbito').value,
+    grado:document.getElementById('pGrado').value,
+    seccion:document.getElementById('pSeccion').value,
+    materia:document.getElementById('pMateria').value,
+    objeto:document.getElementById('pObjeto').value,
+    disciplina:document.getElementById('pDisciplina').value,
+    origen:document.getElementById('pOrigen').value,
+    activo:document.getElementById('pActive').checked
+  });
+  msg('permissionMessage',response.message,response.success?'ok':'err');
+  if(response.success)await loadData();
+}
+
+async function saveObject(){
+  const response=await callApi('adminSaveObject',{
+    token,
+    ambito:document.getElementById('oAmbito').value,
+    objeto:document.getElementById('oObjeto').value,
+    usaGrado:document.getElementById('oGrade').checked,
+    usaSeccion:document.getElementById('oSection').checked,
+    usaMateria:document.getElementById('oSubject').checked,
+    esReporte:document.getElementById('oReport').checked,
+    activo:document.getElementById('oActive').checked
+  });
+  msg('catalogMessage',response.message,response.success?'ok':'err');
+  if(response.success)await loadData();
 }
 
 async function saveDiscipline(){
   const response=await callApi('adminSaveDiscipline',{
     token,
-    oldName:document.getElementById('disciplineOldName').value,
-    nombre:document.getElementById('disciplineName').value.trim(),
-    activo:document.getElementById('disciplineActive').checked
+    nombre:document.getElementById('dName').value,
+    activo:document.getElementById('dActive').checked
   });
-  showMessage('disciplineMessage',response.message,response.success?'success':'error');
+  msg('catalogMessage',response.message,response.success?'ok':'err');
+  if(response.success)await loadData();
+}
+
+async function generateReport(){
+  const ambito=document.getElementById('rAmbito').value;
+  const desde=document.getElementById('rDesde').value;
+  const hasta=document.getElementById('rHasta').value;
+
+  const response=await callApi('adminGenerateReport',{token,ambito,desde,hasta});
+  msg('reportMessage',response.message+(response.rows!==undefined?' Filas: '+response.rows:''),response.success?'ok':'err');
+
   if(response.success){
-    document.getElementById('disciplineOldName').value='';
-    document.getElementById('disciplineName').value='';
-    await loadAdminData();
+    lastCsv=response.csv||'';
+    lastCsvName='reporte_'+ambito.replace(/[^a-z0-9]/gi,'_')+'_'+desde+'_'+hasta+'.csv';
   }
 }
 
-function renderRequests(){
-  const body=document.getElementById('requestsTable');
-  body.innerHTML='';
-  adminData.solicitudes.forEach(item=>{
-    const options=adminData.estados.map(estado=>
-      `<option value="${estado}" ${estado===item.estado?'selected':''}>${estado}</option>`
-    ).join('');
-    const row=document.createElement('tr');
-    row.innerHTML=`
-      <td>${escapeHtml(String(item.fecha||''))}</td>
-      <td>${escapeHtml(item.nombre||item.id||'')}</td>
-      <td>${escapeHtml(item.tipo||'')}</td>
-      <td>${escapeHtml(item.etapa||'')}</td>
-      <td>${escapeHtml(item.destino||'')}</td>
-      <td>
-        <div class="status-row">
-          <select id="status-${item.rowNumber}">${options}</select>
-          <button onclick="updateStatus(${item.rowNumber})">Guardar</button>
-        </div>
-      </td>
-    `;
-    body.appendChild(row);
-  });
-}
+function downloadCsv(){
+  if(!lastCsv){
+    alert('Primero genera un reporte.');
+    return;
+  }
 
-async function updateStatus(rowNumber){
-  const estado=document.getElementById('status-'+rowNumber).value;
-  const response=await callApi('adminUpdateRequestStatus',{token,rowNumber,estado});
-  showMessage('requestMessage',response.message,response.success?'success':'error');
+  const blob=new Blob([lastCsv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);
+  const link=document.createElement('a');
+  link.href=url;
+  link.download=lastCsvName;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
 }
 
 async function clearCache(){
@@ -453,20 +411,24 @@ async function clearCache(){
   alert(response.message);
 }
 
-async function logoutAdmin(){
-  const current=token;
-  token='';
-  if(current)await callApi('logout',{token:current});
+async function logout(){
+  if(token)await callApi('logout',{token});
   location.reload();
+}
+
+function yes(value){
+  return ['sí','si','true','1','yes'].includes(String(value||'').toLowerCase());
 }
 
 function escapeHtml(value){
   return String(value||'')
-    .replace(/&/g,'&amp;')
-    .replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;')
-    .replace(/"/g,'&quot;')
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;')
     .replace(/'/g,'&#039;');
+}
+
+function escapeAttr(value){
+  return escapeHtml(value).replace(/`/g,'');
 }
 </script>
 </body>
