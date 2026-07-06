@@ -63,6 +63,7 @@
     <div class="toolbar">
       <button onclick="loadData()">Actualizar</button>
       <button class="secondary" onclick="clearCache()">Limpiar caché</button>
+      <button class="light" onclick="rehashPins()">Rehacer hashes PIN</button>
       <button class="light" onclick="logout()">Salir</button>
     </div>
 
@@ -85,6 +86,7 @@
         <label><input id="uAdmin" type="checkbox" style="width:auto;min-height:auto"> Es administrador</label>
       </div>
       <div class="toolbar" style="margin-top:12px">
+        <button class="secondary" onclick="newUser()">Nuevo usuario</button>
         <button onclick="saveUser()">Guardar usuario</button>
         <button class="light" onclick="setPin()">Cambiar PIN</button>
         <button class="light" onclick="unlockUser()">Desbloquear</button>
@@ -268,6 +270,19 @@ function renderUsers(){
   });
 }
 
+
+function newUser(){
+  document.getElementById('uId').value=adminData.nextUserId||'';
+  document.getElementById('uName').value='';
+  document.getElementById('uRole').value='';
+  document.getElementById('uObs').value='';
+  document.getElementById('uActive').checked=true;
+  document.getElementById('uAcademic').checked=false;
+  document.getElementById('uAdmin').checked=false;
+  document.getElementById('pId').value=adminData.nextUserId||'';
+  document.getElementById('pName').value='';
+}
+
 function editUser(id){
   const user=(adminData.usuarios||[]).find(item=>String(item.ID)===String(id));
   if(!user)return;
@@ -294,11 +309,22 @@ async function saveUser(){
     esAdministrador:document.getElementById('uAdmin').checked
   });
   msg('userMessage',response.message,response.success?'ok':'err');
-  if(response.success)await loadData();
+  if(response.success){
+    if(response.id){
+      document.getElementById('uId').value=response.id;
+      document.getElementById('pId').value=response.id;
+      document.getElementById('pName').value=document.getElementById('uName').value;
+    }
+    await loadData();
+  }
 }
 
 async function setPin(){
   const id=document.getElementById('uId').value.trim();
+  if(!id){
+    msg('userMessage','Primero guarde o seleccione un usuario para tener ID.','err');
+    return;
+  }
   const pin=prompt('Nuevo PIN de 6 dígitos para '+id+':');
   if(pin===null)return;
   const response=await callApi('adminSetPin',{token,id,pin});
@@ -404,6 +430,14 @@ function downloadCsv(){
   link.click();
   link.remove();
   URL.revokeObjectURL(url);
+}
+
+
+async function rehashPins(){
+  if(!confirm('Esto rehace los PIN Hash usando la pestaña PINsIniciales. Úsalo si los PIN visibles no funcionan después de cambiar de versión/proyecto.'))return;
+  const response=await callApi('adminRehashInitialPins',{token});
+  alert(response.message||'Proceso terminado.');
+  if(response.success)await loadData();
 }
 
 async function clearCache(){
